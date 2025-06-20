@@ -11,8 +11,8 @@ interface IUser extends Document {
   profilePicture?: string;
   role: "undergraduate" | "graduate" | "admin";
   connections: mongoose.Types.ObjectId[];
-  verificationCode?: string;
-  verificationCodeExpires?: Date;
+  verificationCode: string;
+  verificationCodeExpires: Date;
   isVerified: boolean;
   createdAt: Date;
   updatedAt: Date;

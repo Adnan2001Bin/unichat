@@ -14,8 +14,9 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json();
+    console.log('Received verification request body:', body);
     const { userName, code } = verifySchema.parse(body)
-
+console.log('Parsed userName:', userName);
     const user = await UserModel.findOne({ userName })
 
     if (!user) {

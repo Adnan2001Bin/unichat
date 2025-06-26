@@ -16,7 +16,7 @@ export const createGroupSchema = z.object({
     .trim()
     .max(100, { message: "University name cannot exceed 100 characters" })
     .optional(),
-  interests: z.array(z.string()).optional(),
+  skills: z.array(z.string()).optional(),
 });
 
 export type CreateGroupInput = z.infer<typeof createGroupSchema>;

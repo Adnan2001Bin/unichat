@@ -17,13 +17,17 @@ export const updateProfileSchema = z.object({
     .min(1900, { message: "Invalid graduation year" })
     .max(2100, { message: "Invalid graduation year" })
     .optional(),
-  interests: z.array(z.string()).optional(),
-  bio: z
+  skills: z
+    .array(z.string().min(1, 'Each skill must be a non-empty string').max(50, 'Each skill cannot exceed 50 characters'))
+    .max(20, 'Cannot have more than 20 skills')
+    .optional(),
+  headline: z
     .string()
     .trim()
-    .max(200, { message: "Bio cannot exceed 200 characters" })
+    .max(200, { message: "Headline cannot exceed 200 characters" })
     .optional(),
   profilePicture: z.string().url({ message: "Invalid URL" }).optional(),
+  coverPhoto: z.string().url({ message: "Invalid URL" }).optional(),
 });
 
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;

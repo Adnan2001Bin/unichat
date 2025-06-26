@@ -106,7 +106,7 @@ function SignUpPage() {
         form.reset(); // Clear form fields
         setUsernameStatus("idle"); // Reset username status
         setTimeout(() => {
-          router.replace(`/verify/${data.userName}`); // Redirect to verification page
+          router.replace(`/verify/${encodeURIComponent(data.userName)}`);
         }, 2000);
       } else {
         setApiError(response.data.message);

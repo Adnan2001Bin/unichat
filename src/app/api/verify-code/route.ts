@@ -13,8 +13,8 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const { userName, code } = verifySchema.parse(body);
- 
-    const user = await UserModel.findOne({ userName });
+    const decodedUserName = decodeURIComponent(userName);
+    const user = await UserModel.findOne({ userName: decodedUserName });
 
     if (!user) {
       return Response.json(

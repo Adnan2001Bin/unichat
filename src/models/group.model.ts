@@ -4,7 +4,7 @@ interface IGroup extends Document {
   name: string;
   description?: string;
   university?: string;
-  interests?: string[];
+  skills?: string[];
   admin: mongoose.Types.ObjectId;
   members: mongoose.Types.ObjectId[];
   createdAt: Date;
@@ -30,7 +30,7 @@ const GroupSchema: Schema<IGroup> = new Schema(
       trim: true,
       maxlength: [100, "University name cannot exceed 100 characters"],
     },
-    interests: {
+    skills: {
       type: [String],
       default: [],
     },

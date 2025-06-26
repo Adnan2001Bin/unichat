@@ -61,7 +61,6 @@ export default function SignInPage() {
         });
       }
     } else {
-      // Check if `result.url` exists to ensure a successful redirect target
       if (result?.url) {
         toast.success("Success", {
           description: "Logged in successfully!",
@@ -101,8 +100,6 @@ export default function SignInPage() {
             <p className="text-xl text-blue-200 drop-shadow">
               Sign in to continue connecting with fellow students and explore your academic hub.
             </p>
-            {/* New icon/illustration for sign-in */}
-            {/* You can replace this with a custom SVG illustration of a person logging in or a welcome theme */}
             <div className="mt-8 text-white text-9xl leading-none">
               👋💬
             </div>

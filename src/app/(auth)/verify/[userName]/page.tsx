@@ -57,7 +57,7 @@ export default function VerifyCodePage() {
     try {
       // Assuming you have an API endpoint to resend the code
       const response = await axios.post('/api/resend-code', {
-        userName: params.userName, // Send the username to identify the user
+        userName: decodeURIComponent(params.userName)
       });
 
       if (response.data.success) {

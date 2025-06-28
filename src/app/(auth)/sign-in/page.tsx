@@ -24,10 +24,13 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import Link from "next/link"; // Use Link for internal navigation
+import Link from "next/link";
+import Loader from '@/components/Loader';
+import { useSession } from 'next-auth/react';
 
 export default function SignInPage() {
   const router = useRouter();
+  const { status } = useSession();
 
   const form = useForm<z.infer<typeof signInSchema>>({
     resolver: zodResolver(signInSchema),
@@ -39,7 +42,7 @@ export default function SignInPage() {
 
   const onSubmit = async (data: z.infer<typeof signInSchema>) => {
     const result = await signIn("credentials", {
-      redirect: false, // Prevents NextAuth.js from automatically redirecting
+      redirect: false,
       email: data.email,
       password: data.password,
     });
@@ -68,27 +71,28 @@ export default function SignInPage() {
             "bg-green-600 text-white border-green-700 backdrop-blur-md bg-opacity-80",
           duration: 2000,
         });
-        // Redirect to the dashboard or a user-defined callback URL
-        router.replace(result.url); 
+        router.replace(result.url);
       } else {
-          // Fallback if result.url is unexpectedly missing
-          toast.success("Success", {
-            description: "Logged in successfully! Redirecting...",
-            className:
-              "bg-green-600 text-white border-green-700 backdrop-blur-md bg-opacity-80",
-            duration: 2000,
-          });
-          router.replace("/dashboard"); // Default redirect
+        toast.success("Success", {
+          description: "Logged in successfully! Redirecting...",
+          className:
+            "bg-green-600 text-white border-green-700 backdrop-blur-md bg-opacity-80",
+          duration: 2000,
+        });
+        router.replace("/dashboard");
       }
     }
   };
 
+  if (status === 'loading') {
+    return <Loader message="Checking authentication..." />;
+  }
+
   return (
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 p-4">
       <div className="flex flex-col md:flex-row w-full max-w-6xl rounded-2xl shadow-2xl overflow-hidden bg-white">
-        {/* Left Section - Image/Illustration (Enhanced for Sign In) */}
+        {/* Left Section - Image/Illustration */}
         <div className="hidden md:flex flex-1 bg-gradient-to-br from-blue-500 to-purple-600 justify-center items-center p-8 relative overflow-hidden">
-          {/* Abstract shapes for visual interest */}
           <div className="absolute -top-10 -left-10 w-48 h-48 bg-white opacity-10 rounded-full mix-blend-overlay animate-pulse-slow"></div>
           <div className="absolute -bottom-20 -right-20 w-60 h-60 bg-white opacity-10 rounded-full mix-blend-overlay animate-pulse-slow delay-200"></div>
           <div className="absolute top-1/4 right-1/4 w-32 h-32 bg-white opacity-10 rounded-xl transform rotate-45 mix-blend-overlay animate-pulse-slow delay-400"></div>
@@ -121,7 +125,6 @@ export default function SignInPage() {
             <CardContent>
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                  {/* Email Field */}
                   <FormField
                     control={form.control}
                     name="email"
@@ -140,7 +143,6 @@ export default function SignInPage() {
                       </FormItem>
                     )}
                   />
-                  {/* Password Field */}
                   <FormField
                     control={form.control}
                     name="password"
@@ -159,7 +161,6 @@ export default function SignInPage() {
                       </FormItem>
                     )}
                   />
-                  {/* Submit Button */}
                   <Button
                     type="submit"
                     className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg shadow-lg transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed text-lg"
@@ -169,7 +170,6 @@ export default function SignInPage() {
                   </Button>
                 </form>
               </Form>
-              {/* Sign Up Link */}
               <div className="mt-6 text-center">
                 <p className="text-gray-600 text-sm">
                   Don’t have an account?{" "}
@@ -182,7 +182,6 @@ export default function SignInPage() {
           </Card>
         </div>
       </div>
-      {/* Global CSS for animations - ensure these are in your tailwind.config.js or a global CSS file */}
       <style jsx global>{`
         @keyframes pulse-slow {
           0% {

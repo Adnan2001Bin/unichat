@@ -1,15 +1,13 @@
-"use client"; // This directive is necessary for Next.js client-side components
+'use client';
 
-import { SignUpInput, signUpSchema } from "@/schemas/signUpSchema"; // Assuming your schema is correct
+import { SignUpInput, signUpSchema } from "@/schemas/signUpSchema";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import debounce from "lodash.debounce"; // Ensure lodash.debounce is installed (npm install lodash.debounce)
-import axios from "axios"; // Ensure axios is installed (npm install axios)
-import { toast } from "sonner"; // Ensure sonner is installed (npm install sonner)
-
-// Shadcn UI components - ensure these are correctly set up in your project
+import debounce from "lodash.debounce";
+import axios from "axios";
+import { toast } from "sonner";
 import {
   Card,
   CardContent,
@@ -26,7 +24,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
+import Loader from '@/components/Loader';
 
 function SignUpPage() {
   const [usernameStatus, setUsernameStatus] = useState<
@@ -34,6 +33,7 @@ function SignUpPage() {
   >("idle");
   const [apiError, setApiError] = useState<string | null>(null);
   const [apiSuccess, setApiSuccess] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const form = useForm<SignUpInput>({
@@ -45,9 +45,6 @@ function SignUpPage() {
     },
   });
 
-  // Debounced username availability check
-  // Uses useCallback to memoize the function, preventing unnecessary re-creations
-  // and ensuring debounce works correctly across renders.
   const checkUsernameAvailability = React.useCallback(
     debounce(async (userName: string) => {
       if (!userName) {
@@ -65,23 +62,24 @@ function SignUpPage() {
       } catch (error) {
         setUsernameStatus("error");
         console.error("Error checking username:", error);
+      } finally {
+        setLoading(false);
       }
     }, 500),
-    [] // Empty dependency array means this function is created once
+    []
   );
 
-  // Cleanup the debounced function on component unmount
   useEffect(() => {
     return () => {
       checkUsernameAvailability.cancel();
     };
-  }, [checkUsernameAvailability]); // Dependency here ensures cleanup only if the memoized function itself changes (which it won't with [] above)
+  }, [checkUsernameAvailability]);
 
   const onSubmit = async (data: SignUpInput) => {
     setApiError(null);
     setApiSuccess(null);
+    setLoading(true);
 
-    // Prevent submission if username is still being checked or is taken
     if (usernameStatus === "checking" || usernameStatus === "taken") {
       toast.error("Validation Error", {
         description: "Please resolve username issues before submitting.",
@@ -89,6 +87,7 @@ function SignUpPage() {
           "bg-orange-600 text-white border-orange-700 backdrop-blur-md bg-opacity-80",
         duration: 3000,
       });
+      setLoading(false);
       return;
     }
 
@@ -103,8 +102,8 @@ function SignUpPage() {
             "bg-green-600 text-white border-green-700 backdrop-blur-md bg-opacity-80",
           duration: 4000,
         });
-        form.reset(); // Clear form fields
-        setUsernameStatus("idle"); // Reset username status
+        form.reset();
+        setUsernameStatus("idle");
         setTimeout(() => {
           router.replace(`/verify/${encodeURIComponent(data.userName)}`);
         }, 2000);
@@ -127,15 +126,19 @@ function SignUpPage() {
           "bg-red-600 text-white border-red-700 backdrop-blur-md bg-opacity-80",
         duration: 4000,
       });
+    } finally {
+      setLoading(false);
     }
   };
+
+  if (loading) {
+    return <Loader message="Processing..." />;
+  }
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 p-4">
       <div className="flex flex-col md:flex-row w-full max-w-6xl rounded-2xl shadow-2xl overflow-hidden bg-white">
-        {/* Left Section - Image/Illustration */}
         <div className="hidden md:flex flex-1 bg-gradient-to-br from-blue-500 to-purple-600 justify-center items-center p-8 relative overflow-hidden">
-          {/* Abstract shapes for visual interest */}
           <div className="absolute -top-10 -left-10 w-48 h-48 bg-white opacity-10 rounded-full mix-blend-overlay animate-pulse-slow"></div>
           <div className="absolute -bottom-20 -right-20 w-60 h-60 bg-white opacity-10 rounded-full mix-blend-overlay animate-pulse-slow delay-200"></div>
           <div className="absolute top-1/4 right-1/4 w-32 h-32 bg-white opacity-10 rounded-xl transform rotate-45 mix-blend-overlay animate-pulse-slow delay-400"></div>
@@ -147,8 +150,6 @@ function SignUpPage() {
             <p className="text-xl text-blue-200 drop-shadow">
               Connect & Collaborate with fellow students. Share, learn, and grow together!
             </p>
-            {/* Placeholder for a relevant illustration or icon */}
-            {/* You can replace this with an actual SVG illustration tailored to student life/communication */}
             <div className="mt-8 text-white text-9xl leading-none">
               🎓💬
             </div>
@@ -158,7 +159,6 @@ function SignUpPage() {
           </div>
         </div>
 
-        {/* Right Section - Form */}
         <div className="flex-1 p-8 md:p-12 flex items-center justify-center">
           <Card className="w-full max-w-md bg-white border-none shadow-none">
             <CardHeader className="text-center pb-6">
@@ -171,7 +171,6 @@ function SignUpPage() {
             <CardContent>
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                  {/* Username Field */}
                   <FormField
                     control={form.control}
                     name="userName"
@@ -183,8 +182,8 @@ function SignUpPage() {
                             placeholder="Choose a unique username"
                             {...field}
                             onChange={(e) => {
-                              field.onChange(e); // Update react-hook-form state
-                              checkUsernameAvailability(e.target.value); // Trigger debounced check
+                              field.onChange(e);
+                              checkUsernameAvailability(e.target.value);
                             }}
                             className="border border-gray-300 focus:ring-blue-500 focus:border-blue-500 rounded-lg p-2.5 w-full transition duration-200 ease-in-out text-gray-800"
                           />
@@ -213,8 +212,6 @@ function SignUpPage() {
                       </FormItem>
                     )}
                   />
-
-                  {/* Email Field */}
                   <FormField
                     control={form.control}
                     name="email"
@@ -233,8 +230,6 @@ function SignUpPage() {
                       </FormItem>
                     )}
                   />
-
-                  {/* Password Field */}
                   <FormField
                     control={form.control}
                     name="password"
@@ -253,8 +248,6 @@ function SignUpPage() {
                       </FormItem>
                     )}
                   />
-
-                  {/* Submit Button */}
                   <Button
                     type="submit"
                     className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg shadow-lg transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed text-lg"
@@ -266,8 +259,6 @@ function SignUpPage() {
                       ? "Creating Account..."
                       : "Sign Up"}
                   </Button>
-
-                  {/* API Error/Success Messages */}
                   {apiError && (
                     <p className="mt-4 text-red-600 text-center text-sm font-medium p-2 bg-red-50 rounded-md border border-red-200 animate-fade-in">
                       {apiError}
@@ -280,8 +271,6 @@ function SignUpPage() {
                   )}
                 </form>
               </Form>
-
-              {/* Sign In Link */}
               <div className="mt-6 text-center">
                 <p className="text-gray-600 text-sm">
                   Already have an account?{" "}
@@ -298,4 +287,4 @@ function SignUpPage() {
   );
 }
 
-export default SignUpPage;
+export default SignUpPage

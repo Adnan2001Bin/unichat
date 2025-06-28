@@ -12,6 +12,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useRouter } from 'next/navigation';
 
 type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
 
@@ -19,6 +20,7 @@ const ProfileSettings = () => {
   const [profilePictureUrl, setProfilePictureUrl] = useState<string | null>(null);
   const [coverPhotoUrl, setCoverPhotoUrl] = useState<string | null>(null);
   const [newSkill, setNewSkill] = useState<string>('');
+  const router = useRouter()
 
   const form = useForm<UpdateProfileInput>({
     resolver: zodResolver(updateProfileSchema),
@@ -55,6 +57,9 @@ const ProfileSettings = () => {
           });
           setProfilePictureUrl(result.data.profilePicture || null);
           setCoverPhotoUrl(result.data.coverPhoto || null);
+
+         
+          
         } else {
           toast.error('Error', {
             description: result.message || 'Failed to fetch profile data.',
@@ -100,6 +105,10 @@ const ProfileSettings = () => {
           profilePicture: profilePictureUrl || '',
           coverPhoto: coverPhotoUrl || '',
         });
+
+         setTimeout(() => {
+          router.replace(`/profile`);
+        }, 2000);
       } else {
         toast.error('Error', {
           description: result.message,

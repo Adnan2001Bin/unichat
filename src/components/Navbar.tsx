@@ -52,6 +52,8 @@ const Navbar: React.FC = () => {
   const userName = session?.user?.userName;
   const profilePicture = userData?.profilePicture;
 
+  
+
   return (
     <motion.nav
       initial={{ y: -100 }}
@@ -79,7 +81,7 @@ const Navbar: React.FC = () => {
         <div className="flex items-center sm:space-x-3 lg:space-x-8 flex-shrink-0">
           <NavItem href="/" icon={homeIcon} alt="Home" label="Home" />
           <NavItem href="/friends" icon={friendlistIcon} alt="Friend List" label="Friends" />
-          <NavItem href="/friends/add" icon={addfriendIcon} alt="Add Friend" label="Add Friend" />
+          <NavItem href="/friends/findfriends" icon={addfriendIcon} alt="Add Friend" label="Add Friend" />
           <NavItem href="/groups" icon={groupslistIcon} alt="Groups List" label="Groups" />
         </div>
 

@@ -5,15 +5,8 @@ import { toast } from 'sonner';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
-import {
-  Brain,
-  GraduationCap,
-  Briefcase,
-  Edit,
-  Loader2,
-  Image as ImageIcon,
-  UserCircle,
-} from 'lucide-react'; // Added icons for a more visual appeal
+import { Brain, GraduationCap, Briefcase, Edit, Image as ImageIcon, UserCircle } from 'lucide-react';
+import Loader from '@/components/Loader';
 
 interface ProfileData {
   userName: string;
@@ -63,12 +56,7 @@ const MyProfile = () => {
   }, []);
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
-        <p className="ml-3 text-gray-600 text-lg">Loading profile...</p>
-      </div>
-    );
+    return <Loader message="Loading profile..." />;
   }
 
   if (!profile) {

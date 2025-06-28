@@ -1,6 +1,7 @@
 import mongoose, { Schema, Document } from "mongoose";
 
 interface IUser extends Document {
+   _id: mongoose.Types.ObjectId;
   userName: string;
   email: string;
   password: string;
@@ -12,6 +13,8 @@ interface IUser extends Document {
   coverPhoto?: string;
   role: "undergraduate" | "graduate" | "admin";
   connections: mongoose.Types.ObjectId[];
+  pendingSentRequests: mongoose.Types.ObjectId[];
+  pendingReceivedRequests: mongoose.Types.ObjectId[];
   verificationCode: string;
   verificationCodeExpires: Date;
   isVerified: boolean;
@@ -77,6 +80,19 @@ const UserSchema: Schema<IUser> = new Schema(
       default: "undergraduate",
     },
     connections: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+
+    pendingSentRequests: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    pendingReceivedRequests: [
       {
         type: Schema.Types.ObjectId,
         ref: "User",

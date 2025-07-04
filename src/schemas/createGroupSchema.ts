@@ -16,7 +16,10 @@ export const createGroupSchema = z.object({
     .trim()
     .max(100, { message: "University name cannot exceed 100 characters" })
     .optional(),
-  skills: z.array(z.string()).optional(),
+  coverImage: z
+    .string()
+    .url({ message: "Invalid URL for cover image" })
+    .optional(),
 });
 
 export type CreateGroupInput = z.infer<typeof createGroupSchema>;

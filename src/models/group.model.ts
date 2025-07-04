@@ -4,9 +4,9 @@ interface IGroup extends Document {
   name: string;
   description?: string;
   university?: string;
-  skills?: string[];
   admin: mongoose.Types.ObjectId;
   members: mongoose.Types.ObjectId[];
+  coverImage?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -30,10 +30,6 @@ const GroupSchema: Schema<IGroup> = new Schema(
       trim: true,
       maxlength: [100, "University name cannot exceed 100 characters"],
     },
-    skills: {
-      type: [String],
-      default: [],
-    },
     admin: {
       type: Schema.Types.ObjectId,
       ref: "User",
@@ -45,6 +41,11 @@ const GroupSchema: Schema<IGroup> = new Schema(
         ref: "User",
       },
     ],
+    coverImage: {
+      type: String,
+      trim: true,
+      default: null,
+    },
     createdAt: {
       type: Date,
       default: Date.now,

@@ -1,0 +1,44 @@
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    // "noEmit": true,
+    "esModuleInterop": true,
+    // "module": "esnext",
+    // "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "typeRoots": [
+      "./node_modules/@types",
+      "./types"
+    ],
+
+    "noEmit": false, // Change this to allow compilation
+    "module": "commonjs", // Change this for Node.js compatibility
+    "outDir": "./dist", // Add output directory
+    "moduleResolution": "node" // Better for Node.js
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "src/app/(auth)/update-profile",
+    "server.ts",
+    "types/**/*.d.ts"
+  ],
+  "exclude": ["node_modules"]
+}

@@ -1,35 +1,37 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
-import { toast } from 'sonner';
-import { CldUploadWidget } from 'next-cloudinary';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { ImageIcon } from 'lucide-react';
-import Loader from '@/components/Loader';
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { toast } from "sonner";
+import { CldUploadWidget } from "next-cloudinary";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { ImageIcon } from "lucide-react";
+import Loader from "@/components/Loader";
 
 const CreateGroup: React.FC = () => {
   const { status } = useSession();
   const router = useRouter();
   const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    privacy: 'public' as 'public' | 'private',
-    coverImage: '',
+    name: "",
+    description: "",
+    privacy: "public" as "public" | "private",
+    coverImage: "",
   });
   const [loading, setLoading] = useState(false);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handlePrivacyChange = (value: 'public' | 'private') => {
+  const handlePrivacyChange = (value: "public" | "private") => {
     setFormData((prev) => ({ ...prev, privacy: value }));
   };
 
@@ -38,28 +40,32 @@ const CreateGroup: React.FC = () => {
     setLoading(true);
 
     try {
-      const response = await fetch('/api/groups/create', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/groups/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
 
       const result = await response.json();
       if (result.success) {
-        toast.success('Group created successfully', {
-          className: 'bg-green-600 text-white border-green-700 backdrop-blur-md bg-opacity-80',
+        toast.success("Group created successfully", {
+          className:
+            "bg-green-600 text-white border-green-700 backdrop-blur-md bg-opacity-80",
           duration: 4000,
         });
-        router.push('/groups');
+        router.push("/groups");
       } else {
-        toast.error(result.message || 'Failed to create group', {
-          className: 'bg-red-600 text-white border-red-700 backdrop-blur-md bg-opacity-80',
+        toast.error(result.message || "Failed to create group", {
+          className:
+            "bg-red-600 text-white border-red-700 backdrop-blur-md bg-opacity-80",
           duration: 4000,
         });
       }
     } catch (error) {
-      toast.error('Error creating group', {
-        className: 'bg-red-600 text-white border-red-700 backdrop-blur-md bg-opacity-80',
+      console.error(error);
+      toast.error("Error creating group", {
+        className:
+          "bg-red-600 text-white border-red-700 backdrop-blur-md bg-opacity-80",
         duration: 4000,
       });
     } finally {
@@ -67,12 +73,12 @@ const CreateGroup: React.FC = () => {
     }
   };
 
-  if (status === 'loading') {
+  if (status === "loading") {
     return <Loader message="Loading..." />;
   }
 
-  if (status === 'unauthenticated') {
-    router.push('/sign-in');
+  if (status === "unauthenticated") {
+    router.push("/sign-in");
     return null;
   }
 
@@ -99,7 +105,10 @@ const CreateGroup: React.FC = () => {
               />
             </div>
             <div>
-              <Label htmlFor="description" className="text-gray-700 font-medium">
+              <Label
+                htmlFor="description"
+                className="text-gray-700 font-medium"
+              >
                 Description
               </Label>
               <textarea
@@ -140,24 +149,27 @@ const CreateGroup: React.FC = () => {
               <CldUploadWidget
                 uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
                 options={{
-                  folder: 'group_covers',
-                  sources: ['local', 'url', 'camera'],
+                  folder: "group_covers",
+                  sources: ["local", "url", "camera"],
                   multiple: false,
-                  resourceType: 'image',
+                  resourceType: "image",
                 }}
                 onSuccess={(result: any) => {
                   const secureUrl = result?.info?.secure_url;
                   if (secureUrl) {
                     setFormData((prev) => ({ ...prev, coverImage: secureUrl }));
-                    toast.success('Cover image uploaded successfully', {
-                      className: 'bg-green-600 text-white border-green-700 backdrop-blur-md bg-opacity-80',
+                    toast.success("Cover image uploaded successfully", {
+                      className:
+                        "bg-green-600 text-white border-green-700 backdrop-blur-md bg-opacity-80",
                       duration: 4000,
                     });
                   }
                 }}
                 onError={(error: any) => {
-                  toast.error('Failed to upload cover image', {
-                    className: 'bg-red-600 text-white border-red-700 backdrop-blur-md bg-opacity-80',
+                  console.error(error);
+                  toast.error("Failed to upload cover image", {
+                    className:
+                      "bg-red-600 text-white border-red-700 backdrop-blur-md bg-opacity-80",
                     duration: 4000,
                   });
                 }}
@@ -186,7 +198,7 @@ const CreateGroup: React.FC = () => {
               disabled={loading}
               className="w-full bg-gradient-to-r from-[#5095d1] to-[#2e619f] hover:from-[#5095d1] hover:to-[#497ec0] text-white font-semibold py-3 rounded-full shadow-lg transition-all duration-300 transform hover:scale-105 disabled:opacity-50"
             >
-              {loading ? 'Creating...' : 'Create Group'}
+              {loading ? "Creating..." : "Create Group"}
             </Button>
           </form>
         </CardContent>

@@ -1,12 +1,19 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { toast } from 'sonner';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { useRouter } from 'next/navigation';
-import { Brain, GraduationCap, Briefcase, Edit, Image as ImageIcon, UserCircle } from 'lucide-react';
-import Loader from '@/components/Loader';
+import { useState, useEffect } from "react";
+import { toast } from "sonner";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+import {
+  Brain,
+  GraduationCap,
+  Briefcase,
+  Edit,
+  Image as ImageIcon,
+  UserCircle,
+} from "lucide-react";
+import Loader from "@/components/Loader";
 
 interface ProfileData {
   userName: string;
@@ -26,25 +33,27 @@ const MyProfile = () => {
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
-        const response = await fetch('/api/get-updated-field', {
-          method: 'GET',
-          headers: { 'Content-Type': 'application/json' },
+        const response = await fetch("/api/get-updated-field", {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
         });
         const result = await response.json();
         if (result.success && result.data) {
           setProfile(result.data);
         } else {
-          toast.error('Error', {
-            description: result.message || 'Failed to fetch profile data.',
-            className: 'bg-red-600 text-white border-red-700 backdrop-blur-md bg-opacity-80',
+          toast.error("Error", {
+            description: result.message || "Failed to fetch profile data.",
+            className:
+              "bg-red-600 text-white border-red-700 backdrop-blur-md bg-opacity-80",
             duration: 4000,
           });
         }
       } catch (error) {
-        console.error('Error fetching profile data:', error);
-        toast.error('Error', {
-          description: 'Failed to fetch profile data.',
-          className: 'bg-red-600 text-white border-red-700 backdrop-blur-md bg-opacity-80',
+        console.error("Error fetching profile data:", error);
+        toast.error("Error", {
+          description: "Failed to fetch profile data.",
+          className:
+            "bg-red-600 text-white border-red-700 backdrop-blur-md bg-opacity-80",
           duration: 4000,
         });
       } finally {
@@ -67,7 +76,7 @@ const MyProfile = () => {
             Oops! Unable to load your profile.
           </p>
           <Button
-            onClick={() => router.push('/update-profile')}
+            onClick={() => router.push("/update-profile")}
             className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-300 ease-in-out transform hover:scale-105"
           >
             Create Your Profile Now
@@ -99,7 +108,12 @@ const MyProfile = () => {
                 variant="outline"
                 size="icon"
                 className="rounded-full bg-white/70 backdrop-blur-sm hover:bg-white transition-colors duration-200"
-                onClick={() => toast.info('Feature coming soon!', { description: 'Edit cover photo functionality is under development.' })}
+                onClick={() =>
+                  toast.info("Feature coming soon!", {
+                    description:
+                      "Edit cover photo functionality is under development.",
+                  })
+                }
               >
                 <Edit className="h-5 w-5 text-gray-700" />
               </Button>
@@ -131,11 +145,13 @@ const MyProfile = () => {
                   {profile.userName}
                 </h1>
                 {profile.headline && (
-                  <p className="text-gray-700 mt-2 text-lg font-medium">{profile.headline}</p>
+                  <p className="text-gray-700 mt-2 text-lg font-medium">
+                    {profile.headline}
+                  </p>
                 )}
               </div>
               <Button
-                onClick={() => router.push('/update-profile')}
+                onClick={() => router.push("/update-profile")}
                 className="mt-4 sm:mt-0 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold py-2 px-6 rounded-full shadow-lg transition-all duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-2xl flex items-center"
               >
                 <Edit className="h-5 w-5 mr-2" />
@@ -149,7 +165,9 @@ const MyProfile = () => {
                 <h2 className="text-2xl font-bold text-gray-800 flex items-center mb-3">
                   <Briefcase className="h-6 w-6 mr-3 text-blue-500" /> About
                 </h2>
-                <p className="text-gray-600 leading-relaxed text-base">{profile.headline}</p>
+                <p className="text-gray-600 leading-relaxed text-base">
+                  {profile.headline}
+                </p>
               </div>
             )}
 
@@ -157,14 +175,19 @@ const MyProfile = () => {
             {(profile.university || profile.graduationYear) && (
               <div className="mt-8 border-t border-gray-200 pt-6">
                 <h2 className="text-2xl font-bold text-gray-800 flex items-center mb-3">
-                  <GraduationCap className="h-6 w-6 mr-3 text-purple-500" /> Education
+                  <GraduationCap className="h-6 w-6 mr-3 text-purple-500" />{" "}
+                  Education
                 </h2>
                 <div className="mt-2 space-y-1">
                   {profile.university && (
-                    <p className="text-gray-700 font-semibold text-lg">{profile.university}</p>
+                    <p className="text-gray-700 font-semibold text-lg">
+                      {profile.university}
+                    </p>
                   )}
                   {profile.graduationYear && (
-                    <p className="text-gray-500 text-base">Class of {profile.graduationYear}</p>
+                    <p className="text-gray-500 text-base">
+                      Class of {profile.graduationYear}
+                    </p>
                   )}
                 </div>
               </div>

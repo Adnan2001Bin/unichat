@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import Loader from "@/components/Loader";
 import { UserCircle } from "lucide-react";
@@ -10,13 +10,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button"; // Button component is imported but not used directly for 'Find Friends' here. Keep for consistency.
 
 // Define the new color theme variables based on "Professional & Calming"
-const THEME_PRIMARY_DARK_BLUE = '#2C3E50'; // For strong elements, main text, header gradient start, and one blob
-const THEME_SECONDARY_BLUE = '#3498DB'; // For header gradient end, and one blob
-const THEME_ACCENT_GREEN = '#2ECC71'; // For "Pending" status text color, and one blob
-const THEME_BACKGROUND_LIGHT = '#ECF0F1'; // Page background
-const THEME_TEXT_DARK = '#2C3E50'; // Main dark text
-const THEME_TEXT_LIGHT = '#7F8C8D'; // Secondary light text
-const THEME_CTA_YELLOW = '#F1C40F'; // For "Find Friends" button, and one blob
+const THEME_PRIMARY_DARK_BLUE = "#2C3E50"; // For strong elements, main text, header gradient start, and one blob
+const THEME_SECONDARY_BLUE = "#3498DB"; // For header gradient end, and one blob
+const THEME_ACCENT_GREEN = "#2ECC71"; // For "Pending" status text color, and one blob
+const THEME_BACKGROUND_LIGHT = "#ECF0F1"; // Page background
+const THEME_TEXT_DARK = "#2C3E50"; // Main dark text
+const THEME_TEXT_LIGHT = "#7F8C8D"; // Secondary light text
+const THEME_CTA_YELLOW = "#F1C40F"; // For "Find Friends" button, and one blob
 
 // No specific hover variables needed when using direct Tailwind classes like hover:bg-blue-600
 
@@ -45,6 +45,7 @@ function PendingSentRequests() {
           });
         }
       } catch (error) {
+        console.error(error);
         toast.error("Error", {
           description: "Failed to fetch sent requests",
           className:
@@ -71,8 +72,8 @@ function PendingSentRequests() {
   }
 
   return (
-    <div 
-      className="min-h-screen p-4 sm:p-6 lg:p-8 font-sans relative overflow-hidden" 
+    <div
+      className="min-h-screen p-4 sm:p-6 lg:p-8 font-sans relative overflow-hidden"
       style={{ backgroundColor: THEME_BACKGROUND_LIGHT }}
     >
       {/* Abstract background shapes with adjusted colors */}
@@ -89,9 +90,17 @@ function PendingSentRequests() {
         style={{ backgroundColor: THEME_CTA_YELLOW }}
       ></div>
 
-      <div className="max-w-4xl mx-auto relative z-10 mt-15"> {/* Ensure content is above blobs with z-10 */}
+      <div className="max-w-4xl mx-auto relative z-10 mt-15">
+        {" "}
+        {/* Ensure content is above blobs with z-10 */}
         <Card className="bg-white shadow-xl rounded-2xl overflow-hidden border border-gray-100">
-          <CardHeader className="p-6" style={{ background: `linear-gradient(to right, ${THEME_PRIMARY_DARK_BLUE}, ${THEME_SECONDARY_BLUE})`, color: 'white' }}>
+          <CardHeader
+            className="p-6"
+            style={{
+              background: `linear-gradient(to right, ${THEME_PRIMARY_DARK_BLUE}, ${THEME_SECONDARY_BLUE})`,
+              color: "white",
+            }}
+          >
             <CardTitle className="text-3xl font-bold tracking-tight">
               Sent Friend Requests
             </CardTitle>
@@ -106,7 +115,10 @@ function PendingSentRequests() {
                     <div
                       key={user._id}
                       className="flex items-center justify-between p-4 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 ease-in-out"
-                      style={{ backgroundColor: 'white', border: `1px solid ${THEME_BACKGROUND_LIGHT}` }}
+                      style={{
+                        backgroundColor: "white",
+                        border: `1px solid ${THEME_BACKGROUND_LIGHT}`,
+                      }}
                     >
                       <div className="flex items-center space-x-4">
                         {user.profilePicture ? (
@@ -117,21 +129,42 @@ function PendingSentRequests() {
                             style={{ borderColor: THEME_SECONDARY_BLUE }}
                           />
                         ) : (
-                          <UserCircle className="w-14 h-14" style={{ color: THEME_SECONDARY_BLUE }} />
+                          <UserCircle
+                            className="w-14 h-14"
+                            style={{ color: THEME_SECONDARY_BLUE }}
+                          />
                         )}
                         <div>
-                          <p className="text-lg font-semibold" style={{ color: THEME_TEXT_DARK }}>
+                          <p
+                            className="text-lg font-semibold"
+                            style={{ color: THEME_TEXT_DARK }}
+                          >
                             {user.userName}
                           </p>
                           {user.university && (
-                            <p className="text-sm" style={{ color: THEME_TEXT_LIGHT }}>{user.university}</p>
+                            <p
+                              className="text-sm"
+                              style={{ color: THEME_TEXT_LIGHT }}
+                            >
+                              {user.university}
+                            </p>
                           )}
                           {user.headline && (
-                            <p className="text-sm italic" style={{ color: THEME_TEXT_LIGHT }}>{user.headline}</p>
+                            <p
+                              className="text-sm italic"
+                              style={{ color: THEME_TEXT_LIGHT }}
+                            >
+                              {user.headline}
+                            </p>
                           )}
                         </div>
                       </div>
-                      <span className="font-semibold" style={{ color: THEME_ACCENT_GREEN }}>Pending</span>
+                      <span
+                        className="font-semibold"
+                        style={{ color: THEME_ACCENT_GREEN }}
+                      >
+                        Pending
+                      </span>
                     </div>
                   ))
                 ) : (

@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Card, CardContent } from "./ui/card";
@@ -8,8 +7,6 @@ import { useRouter } from "next/navigation";
 import Loader from "./Loader";
 import { useSession } from "next-auth/react";
 import Friends from "./Friends";
-
-
 
 interface ProfileData {
   userName: string;
@@ -25,7 +22,7 @@ function ProfileHome() {
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
-  
+
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
@@ -82,7 +79,6 @@ function ProfileHome() {
     );
   }
 
-
   return (
     <div className="w-[90%] h-[100%] bg-gradient-to-br from-blue-50 to-purple-50 animate-fade-in">
       <div className="">
@@ -132,7 +128,6 @@ function ProfileHome() {
                 )}
               </div>
             </div>
-
           </CardContent>
         </Card>
 
@@ -141,7 +136,6 @@ function ProfileHome() {
             <div className="flex flex-row justify-between items-center">
               <Friends />
             </div>
-
           </CardContent>
         </Card>
       </div>

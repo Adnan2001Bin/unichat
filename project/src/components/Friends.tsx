@@ -42,10 +42,12 @@ function Friends() {
       fetchFriendsData();
     }
   }, [status]);
-  return(
+  return (
     <div className="flex gap-30">
-        <h1 className="text-sm font-bold font-sans">Friends</h1>
-        <p className="text-sm font-bold font-sans">{friendsData?.connections.length}</p>
+      <h1 className="text-sm font-bold font-sans">Friends</h1>
+      <p className="text-sm font-bold font-sans">
+        {friendsData?.connections.length}
+      </p>
     </div>
   );
 }

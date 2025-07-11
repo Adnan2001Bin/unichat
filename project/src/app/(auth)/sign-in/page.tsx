@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { signInSchema } from "@/schemas/signInSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -25,8 +25,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import Loader from '@/components/Loader';
-import { useSession } from 'next-auth/react';
+import Loader from "@/components/Loader";
+import { useSession } from "next-auth/react";
 
 export default function SignInPage() {
   const router = useRouter();
@@ -71,8 +71,8 @@ export default function SignInPage() {
             "bg-green-600 text-white border-green-700 backdrop-blur-md bg-opacity-80",
           duration: 2000,
         });
-         setTimeout(() => {
-          router.replace('/'); // Redirect to sign-in page after successful verification
+        setTimeout(() => {
+          router.replace("/"); // Redirect to sign-in page after successful verification
         }, 2000);
       } else {
         toast.success("Success", {
@@ -86,7 +86,7 @@ export default function SignInPage() {
     }
   };
 
-  if (status === 'loading') {
+  if (status === "loading") {
     return <Loader message="Checking authentication..." />;
   }
 
@@ -104,11 +104,10 @@ export default function SignInPage() {
               Welcome Back to UniChat!
             </h2>
             <p className="text-xl text-blue-200 drop-shadow">
-              Sign in to continue connecting with fellow students and explore your academic hub.
+              Sign in to continue connecting with fellow students and explore
+              your academic hub.
             </p>
-            <div className="mt-8 text-white text-9xl leading-none">
-              👋💬
-            </div>
+            <div className="mt-8 text-white text-9xl leading-none">👋💬</div>
             <p className="mt-4 text-white text-lg font-medium">
               Your conversations await.
             </p>
@@ -119,20 +118,27 @@ export default function SignInPage() {
         <div className="flex-1 p-8 md:p-12 flex items-center justify-center">
           <Card className="w-full max-w-md bg-white border-none shadow-none">
             <CardHeader className="text-center pb-6">
-              <CardTitle className="text-3xl font-bold text-gray-800">Sign In</CardTitle>
+              <CardTitle className="text-3xl font-bold text-gray-800">
+                Sign In
+              </CardTitle>
               <CardDescription className="text-md text-gray-600 mt-2">
                 Welcome back to the UniChat community!
               </CardDescription>
             </CardHeader>
             <CardContent>
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="space-y-6"
+                >
                   <FormField
                     control={form.control}
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-gray-700 font-medium">Email</FormLabel>
+                        <FormLabel className="text-gray-700 font-medium">
+                          Email
+                        </FormLabel>
                         <FormControl>
                           <Input
                             type="email"
@@ -150,7 +156,9 @@ export default function SignInPage() {
                     name="password"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-gray-700 font-medium">Password</FormLabel>
+                        <FormLabel className="text-gray-700 font-medium">
+                          Password
+                        </FormLabel>
                         <FormControl>
                           <Input
                             type="password"
@@ -175,7 +183,10 @@ export default function SignInPage() {
               <div className="mt-6 text-center">
                 <p className="text-gray-600 text-sm">
                   Don’t have an account?{" "}
-                  <Link href="/auth/signup" className="text-blue-600 hover:underline font-semibold">
+                  <Link
+                    href="/auth/signup"
+                    className="text-blue-600 hover:underline font-semibold"
+                  >
                     Sign up
                   </Link>
                 </p>

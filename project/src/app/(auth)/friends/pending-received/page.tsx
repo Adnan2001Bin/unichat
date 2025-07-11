@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import Loader from "@/components/Loader";
 import { UserCircle } from "lucide-react";
@@ -10,13 +10,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 // Define the new color theme variables based on "Professional & Calming"
-const THEME_PRIMARY_DARK_BLUE = '#2C3E50'; // For strong elements, main text, header gradient start, and one blob
-const THEME_SECONDARY_BLUE = '#3498DB'; // For main action buttons, header gradient end, and one blob
-const THEME_ACCENT_GREEN = '#2ECC71'; // For "Accept" button, success states, and one blob
-const THEME_BACKGROUND_LIGHT = '#ECF0F1'; // Page background
-const THEME_TEXT_DARK = '#2C3E50'; // Main dark text
-const THEME_TEXT_LIGHT = '#7F8C8D'; // Secondary light text
-const THEME_CTA_YELLOW = '#F1C40F'; // For "Find Friends" button, and one blob
+const THEME_PRIMARY_DARK_BLUE = "#2C3E50"; // For strong elements, main text, header gradient start, and one blob
+const THEME_SECONDARY_BLUE = "#3498DB"; // For main action buttons, header gradient end, and one blob
+const THEME_ACCENT_GREEN = "#2ECC71"; // For "Accept" button, success states, and one blob
+const THEME_BACKGROUND_LIGHT = "#ECF0F1"; // Page background
+const THEME_TEXT_DARK = "#2C3E50"; // Main dark text
+const THEME_TEXT_LIGHT = "#7F8C8D"; // Secondary light text
+const THEME_CTA_YELLOW = "#F1C40F"; // For "Find Friends" button, and one blob
 
 // No specific hover variables needed when using direct Tailwind classes like hover:bg-blue-600
 
@@ -45,6 +45,7 @@ function PendingReceivedRequests() {
           });
         }
       } catch (error) {
+        console.error(error);
         toast.error("Error", {
           description: "Failed to fetch pending requests",
           className:
@@ -61,18 +62,22 @@ function PendingReceivedRequests() {
     }
   }, [status]);
 
-  const handleRespondRequest = async (senderId: string, action: 'accept' | 'reject') => {
+  const handleRespondRequest = async (
+    senderId: string,
+    action: "accept" | "reject"
+  ) => {
     try {
-      const response = await fetch('/api/friend-request-respond', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/friend-request-respond", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ senderId, action }),
       });
       const result = await response.json();
       if (result.success) {
-        toast.success('Success', {
+        toast.success("Success", {
           description: result.message,
-          className: 'bg-green-600 text-white border-green-700 backdrop-blur-md bg-opacity-80',
+          className:
+            "bg-green-600 text-white border-green-700 backdrop-blur-md bg-opacity-80",
           duration: 4000,
         });
         setFriendsData((prev) =>
@@ -86,16 +91,18 @@ function PendingReceivedRequests() {
             : prev
         );
       } else {
-        toast.error('Error', {
+        toast.error("Error", {
           description: result.message,
-          className: 'bg-red-600 text-white border-red-700 backdrop-blur-md bg-opacity-80',
+          className:
+            "bg-red-600 text-white border-red-700 backdrop-blur-md bg-opacity-80",
           duration: 4000,
         });
       }
     } catch (error) {
-      toast.error('Error', {
+      toast.error("Error", {
         description: `Failed to ${action} friend request`,
-        className: 'bg-red-600 text-white border-red-700 backdrop-blur-md bg-opacity-80',
+        className:
+          "bg-red-600 text-white border-red-700 backdrop-blur-md bg-opacity-80",
         duration: 4000,
       });
     }
@@ -111,8 +118,8 @@ function PendingReceivedRequests() {
   }
 
   return (
-    <div 
-      className="min-h-screen p-4 sm:p-6 lg:p-8 font-sans relative overflow-hidden" 
+    <div
+      className="min-h-screen p-4 sm:p-6 lg:p-8 font-sans relative overflow-hidden"
       style={{ backgroundColor: THEME_BACKGROUND_LIGHT }}
     >
       {/* Abstract background shapes with adjusted colors */}
@@ -129,9 +136,17 @@ function PendingReceivedRequests() {
         style={{ backgroundColor: THEME_CTA_YELLOW }}
       ></div>
 
-      <div className="max-w-4xl mx-auto relative z-10"> {/* Ensure content is above blobs with z-10 */}
+      <div className="max-w-4xl mx-auto relative z-10">
+        {" "}
+        {/* Ensure content is above blobs with z-10 */}
         <Card className="bg-white shadow-xl rounded-2xl overflow-hidden border border-gray-100">
-          <CardHeader className="p-6" style={{ background: `linear-gradient(to right, ${THEME_PRIMARY_DARK_BLUE}, ${THEME_SECONDARY_BLUE})`, color: 'white' }}>
+          <CardHeader
+            className="p-6"
+            style={{
+              background: `linear-gradient(to right, ${THEME_PRIMARY_DARK_BLUE}, ${THEME_SECONDARY_BLUE})`,
+              color: "white",
+            }}
+          >
             <CardTitle className="text-3xl font-bold tracking-tight">
               Pending Friend Requests
             </CardTitle>
@@ -146,7 +161,10 @@ function PendingReceivedRequests() {
                     <div
                       key={user._id}
                       className="flex items-center justify-between p-4 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 ease-in-out"
-                      style={{ backgroundColor: 'white', border: `1px solid ${THEME_BACKGROUND_LIGHT}` }}
+                      style={{
+                        backgroundColor: "white",
+                        border: `1px solid ${THEME_BACKGROUND_LIGHT}`,
+                      }}
                     >
                       <div className="flex items-center space-x-4">
                         {user.profilePicture ? (
@@ -157,30 +175,50 @@ function PendingReceivedRequests() {
                             style={{ borderColor: THEME_SECONDARY_BLUE }}
                           />
                         ) : (
-                          <UserCircle className="w-14 h-14" style={{ color: THEME_SECONDARY_BLUE }} />
+                          <UserCircle
+                            className="w-14 h-14"
+                            style={{ color: THEME_SECONDARY_BLUE }}
+                          />
                         )}
                         <div>
-                          <p className="text-lg font-semibold" style={{ color: THEME_TEXT_DARK }}>
+                          <p
+                            className="text-lg font-semibold"
+                            style={{ color: THEME_TEXT_DARK }}
+                          >
                             {user.userName}
                           </p>
                           {user.university && (
-                            <p className="text-sm" style={{ color: THEME_TEXT_LIGHT }}>{user.university}</p>
+                            <p
+                              className="text-sm"
+                              style={{ color: THEME_TEXT_LIGHT }}
+                            >
+                              {user.university}
+                            </p>
                           )}
                           {user.headline && (
-                            <p className="text-sm italic" style={{ color: THEME_TEXT_LIGHT }}>{user.headline}</p>
+                            <p
+                              className="text-sm italic"
+                              style={{ color: THEME_TEXT_LIGHT }}
+                            >
+                              {user.headline}
+                            </p>
                           )}
                         </div>
                       </div>
                       <div className="flex space-x-2">
                         <Button
-                          onClick={() => handleRespondRequest(user._id, 'accept')}
+                          onClick={() =>
+                            handleRespondRequest(user._id, "accept")
+                          }
                           className="font-semibold py-2 px-4 rounded-lg transition-all duration-200 bg-emerald-500 hover:bg-emerald-600 text-white" // Tailwind colors for bg and hover
                           // No 'style' prop for bg, so Tailwind classes take full effect
                         >
                           Accept
                         </Button>
                         <Button
-                          onClick={() => handleRespondRequest(user._id, 'reject')}
+                          onClick={() =>
+                            handleRespondRequest(user._id, "reject")
+                          }
                           className="font-semibold py-2 px-4 rounded-lg transition-all duration-200 bg-red-500 hover:bg-red-600 text-white" // Tailwind colors for bg and hover
                         >
                           Reject

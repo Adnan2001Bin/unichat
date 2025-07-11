@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { SignUpInput, signUpSchema } from "@/schemas/signUpSchema";
 import { useRouter } from "next/navigation";
@@ -24,8 +24,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Button } from '@/components/ui/button';
-import Loader from '@/components/Loader';
+import { Button } from "@/components/ui/button";
+import Loader from "@/components/Loader";
 
 function SignUpPage() {
   const [usernameStatus, setUsernameStatus] = useState<
@@ -118,7 +118,8 @@ function SignUpPage() {
       }
     } catch (error: any) {
       const errorMessage =
-        error.response?.data?.message || "Error registering user. Please try again.";
+        error.response?.data?.message ||
+        "Error registering user. Please try again.";
       setApiError(errorMessage);
       toast.error("Error", {
         description: errorMessage,
@@ -148,11 +149,10 @@ function SignUpPage() {
               UniChat
             </h2>
             <p className="text-xl text-blue-200 drop-shadow">
-              Connect & Collaborate with fellow students. Share, learn, and grow together!
+              Connect & Collaborate with fellow students. Share, learn, and grow
+              together!
             </p>
-            <div className="mt-8 text-white text-9xl leading-none">
-              🎓💬
-            </div>
+            <div className="mt-8 text-white text-9xl leading-none">🎓💬</div>
             <p className="mt-4 text-white text-lg font-medium">
               Your academic social hub.
             </p>
@@ -162,7 +162,9 @@ function SignUpPage() {
         <div className="flex-1 p-8 md:p-12 flex items-center justify-center">
           <Card className="w-full max-w-md bg-white border-none shadow-none">
             <CardHeader className="text-center pb-6">
-              <CardTitle className="text-3xl font-bold text-gray-800">Create Your Account</CardTitle>
+              <CardTitle className="text-3xl font-bold text-gray-800">
+                Create Your Account
+              </CardTitle>
               <CardDescription className="text-md text-gray-600 mt-2">
                 Join the UniChat community today!
               </CardDescription>
@@ -170,13 +172,18 @@ function SignUpPage() {
 
             <CardContent>
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="space-y-6"
+                >
                   <FormField
                     control={form.control}
                     name="userName"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-gray-700 font-medium">Username</FormLabel>
+                        <FormLabel className="text-gray-700 font-medium">
+                          Username
+                        </FormLabel>
                         <FormControl>
                           <Input
                             placeholder="Choose a unique username"
@@ -190,17 +197,20 @@ function SignUpPage() {
                         </FormControl>
                         {usernameStatus === "checking" && (
                           <p className="text-sm text-gray-500 mt-1 flex items-center">
-                            <span className="animate-spin mr-2">🔄</span> Checking username...
+                            <span className="animate-spin mr-2">🔄</span>{" "}
+                            Checking username...
                           </p>
                         )}
                         {usernameStatus === "available" && (
                           <p className="text-sm text-green-600 mt-1 flex items-center">
-                            <span className="mr-1">✅</span> Username is available!
+                            <span className="mr-1">✅</span> Username is
+                            available!
                           </p>
                         )}
                         {usernameStatus === "taken" && (
                           <p className="text-sm text-red-600 mt-1 flex items-center">
-                            <span className="mr-1">❌</span> Username is already taken.
+                            <span className="mr-1">❌</span> Username is already
+                            taken.
                           </p>
                         )}
                         {usernameStatus === "error" && (
@@ -217,7 +227,9 @@ function SignUpPage() {
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-gray-700 font-medium">Email</FormLabel>
+                        <FormLabel className="text-gray-700 font-medium">
+                          Email
+                        </FormLabel>
                         <FormControl>
                           <Input
                             type="email"
@@ -235,7 +247,9 @@ function SignUpPage() {
                     name="password"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-gray-700 font-medium">Password</FormLabel>
+                        <FormLabel className="text-gray-700 font-medium">
+                          Password
+                        </FormLabel>
                         <FormControl>
                           <Input
                             type="password"
@@ -252,7 +266,9 @@ function SignUpPage() {
                     type="submit"
                     className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg shadow-lg transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed text-lg"
                     disabled={
-                      form.formState.isSubmitting || usernameStatus === "taken" || usernameStatus === "checking"
+                      form.formState.isSubmitting ||
+                      usernameStatus === "taken" ||
+                      usernameStatus === "checking"
                     }
                   >
                     {form.formState.isSubmitting
@@ -274,7 +290,10 @@ function SignUpPage() {
               <div className="mt-6 text-center">
                 <p className="text-gray-600 text-sm">
                   Already have an account?{" "}
-                  <a href="/sign-in" className="text-blue-600 hover:underline font-semibold">
+                  <a
+                    href="/sign-in"
+                    className="text-blue-600 hover:underline font-semibold"
+                  >
                     Sign in
                   </a>
                 </p>
@@ -287,4 +306,4 @@ function SignUpPage() {
   );
 }
 
-export default SignUpPage
+export default SignUpPage;

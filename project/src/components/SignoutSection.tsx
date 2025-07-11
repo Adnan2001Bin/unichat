@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { signOut, useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
-import { LogOut } from 'lucide-react';
-import { toast } from 'sonner';
-import { useEffect } from 'react';
+import { signOut, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
+import { LogOut } from "lucide-react";
+import { toast } from "sonner";
+import { useEffect } from "react";
 
 const SignoutButton: React.FC = () => {
   const router = useRouter();
@@ -14,18 +14,18 @@ const SignoutButton: React.FC = () => {
   const handleSignout = async () => {
     try {
       await signOut({ redirect: false });
-      toast.success('Signed out successfully', {
+      toast.success("Signed out successfully", {
         className:
-          'bg-green-600 text-white border-green-700 backdrop-blur-md bg-opacity-80',
+          "bg-green-600 text-white border-green-700 backdrop-blur-md bg-opacity-80",
         duration: 4000,
       });
       // Redirect after sign-out
-      router.replace('/sign-in');
+      router.replace("/sign-in");
     } catch (error) {
-      toast.error('Error', {
-        description: 'Failed to sign out. Please try again.',
+      toast.error("Error", {
+        description: "Failed to sign out. Please try again.",
         className:
-          'bg-red-600 text-white border-red-700 backdrop-blur-md bg-opacity-80',
+          "bg-red-600 text-white border-red-700 backdrop-blur-md bg-opacity-80",
         duration: 4000,
       });
     }
@@ -33,8 +33,8 @@ const SignoutButton: React.FC = () => {
 
   // Monitor session status to ensure redirect after sign-out
   useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.replace('/sign-in');
+    if (status === "unauthenticated") {
+      router.replace("/sign-in");
     }
   }, [status, router]);
 

@@ -1,7 +1,7 @@
-import React from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { motion } from 'framer-motion';
+import React from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { motion } from "framer-motion";
 
 interface NavItemProps {
   href: string;
@@ -11,7 +11,13 @@ interface NavItemProps {
   onClick?: () => void;
 }
 
-const NavItem: React.FC<NavItemProps> = ({ href, icon, alt, label, onClick }) => {
+const NavItem: React.FC<NavItemProps> = ({
+  href,
+  icon,
+  alt,
+  label,
+  onClick,
+}) => {
   return (
     <motion.div
       whileHover={{ scale: 1.05 }}
@@ -41,7 +47,5 @@ const NavItem: React.FC<NavItemProps> = ({ href, icon, alt, label, onClick }) =>
     </motion.div>
   );
 };
-
-
 
 export default NavItem;

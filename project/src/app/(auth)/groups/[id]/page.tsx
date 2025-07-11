@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
@@ -51,6 +51,7 @@ const GroupDetails: React.FC = () => {
         });
       }
     } catch (error) {
+      console.error(error);
       toast.error("Error", {
         description: "Failed to fetch group members",
         className:
@@ -78,6 +79,7 @@ const GroupDetails: React.FC = () => {
         });
       }
     } catch (error) {
+      console.error(error);
       toast.error("Error", {
         description: "Failed to fetch group details",
         className:
@@ -106,7 +108,10 @@ const GroupDetails: React.FC = () => {
       const response = await fetch("/api/groups/join", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ groupId, action: group.privacy === "public" ? "join" : "request" }),
+        body: JSON.stringify({
+          groupId,
+          action: group.privacy === "public" ? "join" : "request",
+        }),
       });
       const result = await response.json();
       if (result.success) {
@@ -129,6 +134,7 @@ const GroupDetails: React.FC = () => {
         });
       }
     } catch (error) {
+      console.error(error);
       toast.error("Error", {
         description: "Failed to join group",
         className:
@@ -180,9 +186,13 @@ const GroupDetails: React.FC = () => {
           <CardContent className="p-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
               <div>
-                <h1 className="text-3xl font-bold text-gray-800">{group.name}</h1>
+                <h1 className="text-3xl font-bold text-gray-800">
+                  {group.name}
+                </h1>
                 <p className="text-sm text-gray-500 mt-1">
-                  {group.privacy.charAt(0).toUpperCase() + group.privacy.slice(1)} • Created by {group.creator.userName}
+                  {group.privacy.charAt(0).toUpperCase() +
+                    group.privacy.slice(1)}{" "}
+                  • Created by {group.creator.userName}
                 </p>
                 <p className="text-sm text-gray-500 flex items-center mt-1">
                   <Users className="w-4 h-4 mr-1" /> {group.memberCount} members
@@ -194,7 +204,9 @@ const GroupDetails: React.FC = () => {
                     onClick={handleJoinGroup}
                     className="bg-gradient-to-r from-[#5095d1] to-[#2e619f] hover:from-[#5095d1] hover:to-[#497ec0] text-white font-semibold py-2 px-4 rounded-full transition-all duration-300 transform hover:scale-105"
                   >
-                    {group.privacy === "public" ? "Join Group" : "Request to Join"}
+                    {group.privacy === "public"
+                      ? "Join Group"
+                      : "Request to Join"}
                   </Button>
                 )}
                 {group.isMember && (
@@ -207,24 +219,32 @@ const GroupDetails: React.FC = () => {
               </div>
             </div>
             <div className="border-t border-gray-100 pt-4">
-              <h2 className="text-lg font-semibold text-gray-800 mb-2">About</h2>
+              <h2 className="text-lg font-semibold text-gray-800 mb-2">
+                About
+              </h2>
               <p className="text-gray-600">{group.description}</p>
             </div>
             <Card className="mt-6 bg-white shadow-md rounded-lg p-6">
               <CardContent className="p-0">
-                <h2 className="text-lg font-semibold text-gray-800 mb-4">Creator</h2>
+                <h2 className="text-lg font-semibold text-gray-800 mb-4">
+                  Creator
+                </h2>
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
                     <UserCircle className="h-8 w-8 text-blue-500" />
                   </div>
-                  <p className="text-gray-700 font-medium">{group.creator.userName}</p>
+                  <p className="text-gray-700 font-medium">
+                    {group.creator.userName}
+                  </p>
                 </div>
               </CardContent>
             </Card>
             {group.isMember && (
               <Card className="mt-6 bg-white shadow-md rounded-lg p-6">
                 <CardContent className="p-0">
-                  <h2 className="text-lg font-semibold text-gray-800 mb-4">Members</h2>
+                  <h2 className="text-lg font-semibold text-gray-800 mb-4">
+                    Members
+                  </h2>
                   {members.length === 0 ? (
                     <p className="text-gray-500">No members found.</p>
                   ) : (
@@ -245,7 +265,9 @@ const GroupDetails: React.FC = () => {
                               <UserCircle className="h-8 w-8 text-blue-500" />
                             </div>
                           )}
-                          <p className="text-gray-700 font-medium">{member.userName}</p>
+                          <p className="text-gray-700 font-medium">
+                            {member.userName}
+                          </p>
                         </div>
                       ))}
                     </div>

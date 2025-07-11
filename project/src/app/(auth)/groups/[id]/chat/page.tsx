@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import React, { useState, useEffect, useRef } from "react";
 import { useSession } from "next-auth/react";
@@ -12,13 +12,13 @@ import { io, Socket } from "socket.io-client";
 import Loader from "@/components/Loader";
 
 // Define the new color theme variables based on "Professional & Calming"
-const THEME_PRIMARY_DARK_BLUE = '#2C3E50'; // For strong elements, main text, header gradient start, and one blob
-const THEME_SECONDARY_BLUE = '#3498DB'; // For main action buttons, header gradient end, and one blob
-const THEME_ACCENT_GREEN = '#2ECC71'; // For success states, and one blob
-const THEME_BACKGROUND_LIGHT = '#ECF0F1'; // Page background
-const THEME_TEXT_DARK = '#2C3E50'; // Main dark text
-const THEME_TEXT_LIGHT = '#7F8C8D'; // Secondary light text
-const THEME_CTA_YELLOW = '#F1C40F'; // For one blob (can be used for a specific CTA if needed)
+const THEME_PRIMARY_DARK_BLUE = "#2C3E50"; // For strong elements, main text, header gradient start, and one blob
+const THEME_SECONDARY_BLUE = "#3498DB"; // For main action buttons, header gradient end, and one blob
+const THEME_ACCENT_GREEN = "#2ECC71"; // For success states, and one blob
+const THEME_BACKGROUND_LIGHT = "#ECF0F1"; // Page background
+const THEME_TEXT_DARK = "#2C3E50"; // Main dark text
+const THEME_TEXT_LIGHT = "#7F8C8D"; // Secondary light text
+const THEME_CTA_YELLOW = "#F1C40F"; // For one blob (can be used for a specific CTA if needed)
 
 // No specific hover variables needed when using direct Tailwind classes like hover:bg-blue-600
 
@@ -55,7 +55,8 @@ const GroupChat: React.FC = () => {
     if (!groupId || groupId === "undefined") {
       toast.error("Error", {
         description: "Invalid group ID",
-        className: "bg-red-600 text-white border-red-700 backdrop-blur-md bg-opacity-80",
+        className:
+          "bg-red-600 text-white border-red-700 backdrop-blur-md bg-opacity-80",
         duration: 4000,
       });
       router.push("/groups");
@@ -71,14 +72,16 @@ const GroupChat: React.FC = () => {
         } else {
           toast.error("Error", {
             description: result.message || "Failed to fetch group messages",
-            className: "bg-red-600 text-white border-red-700 backdrop-blur-md bg-opacity-80",
+            className:
+              "bg-red-600 text-white border-red-700 backdrop-blur-md bg-opacity-80",
             duration: 4000,
           });
         }
       } catch (error) {
         toast.error("Error", {
           description: "Failed to fetch group messages",
-          className: "bg-red-600 text-white border-red-700 backdrop-blur-md bg-opacity-80",
+          className:
+            "bg-red-600 text-white border-red-700 backdrop-blur-md bg-opacity-80",
           duration: 4000,
         });
       } finally {
@@ -89,9 +92,12 @@ const GroupChat: React.FC = () => {
     fetchMessages();
 
     // Initialize socket connection
-    const socketInstance = io(process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:4000", {
-      auth: { userId: session?.user?._id },
-    });
+    const socketInstance = io(
+      process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:4000",
+      {
+        auth: { userId: session?.user?._id },
+      }
+    );
 
     socketInstance.on("connect", () => {
       socketInstance.emit("joinGroup", { groupId });
@@ -108,7 +114,8 @@ const GroupChat: React.FC = () => {
     socketInstance.on("error", ({ message }) => {
       toast.error("Error", {
         description: message,
-        className: "bg-red-600 text-white border-red-700 backdrop-blur-md bg-opacity-80",
+        className:
+          "bg-red-600 text-white border-red-700 backdrop-blur-md bg-opacity-80",
         duration: 4000,
       });
     });
@@ -136,7 +143,8 @@ const GroupChat: React.FC = () => {
     } catch (error) {
       toast.error("Error", {
         description: "Failed to send message",
-        className: "bg-red-600 text-white border-red-700 backdrop-blur-md bg-opacity-80",
+        className:
+          "bg-red-600 text-white border-red-700 backdrop-blur-md bg-opacity-80",
         duration: 4000,
       });
     }
@@ -149,8 +157,8 @@ const GroupChat: React.FC = () => {
 
   return (
     // Main container for the chat page, with theme background and centering
-    <div 
-      className="min-h-screen mt-5 pt-16 flex items-center justify-center p-4 sm:p-6 lg:p-8 font-sans relative overflow-hidden" 
+    <div
+      className="min-h-screen mt-5 pt-16 flex items-center justify-center p-4 sm:p-6 lg:p-8 font-sans relative overflow-hidden"
       style={{ backgroundColor: THEME_BACKGROUND_LIGHT }}
     >
       {/* Abstract background shapes with adjusted colors */}
@@ -170,7 +178,13 @@ const GroupChat: React.FC = () => {
       {/* Chat Card - Responsive width and elevated shadow */}
       <Card className="w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-2xl xl:max-w-3xl bg-white shadow-2xl rounded-xl flex flex-col h-[85vh] overflow-hidden relative z-10">
         {/* Card Header for Group Name */}
-        <CardHeader className="p-4 sm:p-5 rounded-t-xl shadow-md" style={{ background: `linear-gradient(to right, ${THEME_PRIMARY_DARK_BLUE}, ${THEME_SECONDARY_BLUE})`, color: 'white' }}>
+        <CardHeader
+          className="p-4 sm:p-5 rounded-t-xl shadow-md"
+          style={{
+            background: `linear-gradient(to right, ${THEME_PRIMARY_DARK_BLUE}, ${THEME_SECONDARY_BLUE})`,
+            color: "white",
+          }}
+        >
           <CardTitle className="text-xl sm:text-2xl font-bold flex items-center gap-3">
             <Users className="h-6 w-6 sm:h-7 sm:w-7" />
             Group Chat
@@ -180,13 +194,26 @@ const GroupChat: React.FC = () => {
         </CardHeader>
 
         {/* Messages Display Area - Scrollable with custom scrollbar and themed background */}
-        <CardContent className="flex-1 p-4 sm:p-6 overflow-y-auto custom-scrollbar" style={{ backgroundColor: `${THEME_BACKGROUND_LIGHT}D0` }}>
+        <CardContent
+          className="flex-1 p-4 sm:p-6 overflow-y-auto custom-scrollbar"
+          style={{ backgroundColor: `${THEME_BACKGROUND_LIGHT}D0` }}
+        >
           {messages.length === 0 ? (
             // Message for empty chat, centered and styled with theme colors
             <div className="flex flex-col items-center justify-center h-full text-center p-4">
-              <Users className="h-12 w-12 mb-4" style={{ color: THEME_SECONDARY_BLUE, opacity: 0.6 }} />
-              <p className="text-lg font-medium" style={{ color: THEME_TEXT_DARK }}>No messages yet!</p>
-              <p className="text-sm mt-1" style={{ color: THEME_TEXT_LIGHT }}>Be the first to start the conversation.</p>
+              <Users
+                className="h-12 w-12 mb-4"
+                style={{ color: THEME_SECONDARY_BLUE, opacity: 0.6 }}
+              />
+              <p
+                className="text-lg font-medium"
+                style={{ color: THEME_TEXT_DARK }}
+              >
+                No messages yet!
+              </p>
+              <p className="text-sm mt-1" style={{ color: THEME_TEXT_LIGHT }}>
+                Be the first to start the conversation.
+              </p>
             </div>
           ) : (
             // Map through messages and display them
@@ -194,7 +221,9 @@ const GroupChat: React.FC = () => {
               <div
                 key={index}
                 className={`mb-4 flex ${
-                  msg.senderId === session?.user?._id ? "justify-end" : "justify-start"
+                  msg.senderId === session?.user?._id
+                    ? "justify-end"
+                    : "justify-start"
                 }`}
               >
                 {/* Message Bubble - Dynamic styling based on sender with theme colors */}
@@ -205,19 +234,48 @@ const GroupChat: React.FC = () => {
                       : "bg-gray-200 text-gray-800 rounded-bl-none" // Other's messages (Tailwind gray)
                   }`}
                   style={{
-                    backgroundColor: msg.senderId === session?.user?._id ? THEME_SECONDARY_BLUE : '#F0F0F0', // User message: theme blue, Others: light gray
-                    color: msg.senderId === session?.user?._id ? 'white' : THEME_TEXT_DARK,
+                    backgroundColor:
+                      msg.senderId === session?.user?._id
+                        ? THEME_SECONDARY_BLUE
+                        : "#F0F0F0", // User message: theme blue, Others: light gray
+                    color:
+                      msg.senderId === session?.user?._id
+                        ? "white"
+                        : THEME_TEXT_DARK,
                   }}
                 >
                   {/* Sender Name */}
-                  <p className="text-xs sm:text-sm font-semibold mb-1 opacity-90" style={{ color: msg.senderId === session?.user?._id ? 'rgba(255,255,255,0.8)' : THEME_TEXT_LIGHT }}>
-                    {msg.senderId === session?.user?._id ? "You" : msg.senderName}
+                  <p
+                    className="text-xs sm:text-sm font-semibold mb-1 opacity-90"
+                    style={{
+                      color:
+                        msg.senderId === session?.user?._id
+                          ? "rgba(255,255,255,0.8)"
+                          : THEME_TEXT_LIGHT,
+                    }}
+                  >
+                    {msg.senderId === session?.user?._id
+                      ? "You"
+                      : msg.senderName}
                   </p>
                   {/* Message Content */}
-                  <p className="text-sm sm:text-base break-words">{msg.content}</p>
+                  <p className="text-sm sm:text-base break-words">
+                    {msg.content}
+                  </p>
                   {/* Timestamp */}
-                  <p className="text-right text-xs mt-2 opacity-70" style={{ color: msg.senderId === session?.user?._id ? 'rgba(255,255,255,0.6)' : THEME_TEXT_LIGHT }}>
-                    {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  <p
+                    className="text-right text-xs mt-2 opacity-70"
+                    style={{
+                      color:
+                        msg.senderId === session?.user?._id
+                          ? "rgba(255,255,255,0.6)"
+                          : THEME_TEXT_LIGHT,
+                    }}
+                  >
+                    {new Date(msg.createdAt).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
                   </p>
                 </div>
               </div>
@@ -235,7 +293,13 @@ const GroupChat: React.FC = () => {
             onChange={(e) => setNewMessage(e.target.value)}
             placeholder="Type your message here..."
             className="flex-1 p-3 sm:p-4 rounded-full border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-200 text-base"
-            style={{ borderColor: THEME_TEXT_LIGHT, color: THEME_TEXT_DARK, '--tw-focus-ring-color': `${THEME_SECONDARY_BLUE}33` } as React.CSSProperties}
+            style={
+              {
+                borderColor: THEME_TEXT_LIGHT,
+                color: THEME_TEXT_DARK,
+                "--tw-focus-ring-color": `${THEME_SECONDARY_BLUE}33`,
+              } as React.CSSProperties
+            }
             onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
           />
           {/* Send Button */}

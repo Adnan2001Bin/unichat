@@ -1,13 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import connectDB from "@/lib/connectDB";
 import GroupModel from "@/models/group.model";
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 
-export async function GET(
-  request: NextRequest,
-  context: { params: Promise<{ groupId: string }> }
-) {
+export async function GET(context: { params: Promise<{ groupId: string }> }) {
   await connectDB();
 
   try {
@@ -33,7 +30,11 @@ export async function GET(
       );
     }
 
-    if (!group.members.some((member: any) => member._id.toString() === session.user._id)) {
+    if (
+      !group.members.some(
+        (member: any) => member._id.toString() === session.user._id
+      )
+    ) {
       return NextResponse.json(
         { success: false, message: "You are not a member of this group" },
         { status: 403 }

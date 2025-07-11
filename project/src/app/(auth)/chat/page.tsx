@@ -90,6 +90,7 @@ const Chat: React.FC = () => {
             });
           }
         } catch (error) {
+          console.error(error);
           toast.error('Error fetching friends', {
             className: 'bg-red-600 text-white border-red-700 backdrop-blur-md bg-opacity-80',
             duration: 4000,
@@ -130,6 +131,7 @@ const Chat: React.FC = () => {
             });
           }
         } catch (error) {
+          console.error(error);
           toast.error('Error searching users', {
             className: 'bg-red-600 text-white border-red-700 backdrop-blur-md bg-opacity-80',
             duration: 4000,
@@ -207,6 +209,7 @@ const Chat: React.FC = () => {
             });
           }
         } catch (error) {
+          console.error(error);
           toast.error('Error fetching chat history', {
             className: 'bg-red-600 text-white border-red-700 backdrop-blur-md bg-opacity-80',
             duration: 4000,
@@ -266,6 +269,7 @@ const Chat: React.FC = () => {
         });
       }
     } catch (error) {
+      console.error(error);
       toast.error('Error sending friend request', {
         className: 'bg-red-600 text-white border-red-700 backdrop-blur-md bg-opacity-80',
         duration: 4000,

@@ -17,7 +17,6 @@ import {
   MoreVertical,
   Smile,
   Paperclip,
-  ArrowRight, // Added for friend request button
 } from 'lucide-react';
 import Loader from '@/components/Loader';
 import Image from 'next/image';

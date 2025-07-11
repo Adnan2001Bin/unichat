@@ -71,6 +71,8 @@ export default function AddFriendPage() {
           });
         }
       } catch (error) {
+        console.log(error);
+        
         toast.error("Error", {
           description: "Failed to fetch friends data",
           className:

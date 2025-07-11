@@ -22,6 +22,7 @@ const SignoutButton: React.FC = () => {
       // Redirect after sign-out
       router.replace("/sign-in");
     } catch (error) {
+      console.log(error);
       toast.error("Error", {
         description: "Failed to sign out. Please try again.",
         className:

@@ -2,10 +2,9 @@ import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Card, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
-import { Briefcase, GraduationCap, ImageIcon, UserCircle } from "lucide-react";
+import { ImageIcon, UserCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Loader from "./Loader";
-import { useSession } from "next-auth/react";
 import Friends from "./Friends";
 
 interface ProfileData {

@@ -5,12 +5,16 @@ import { toast } from "sonner";
 
 function Friends() {
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
   const { data: session, status } = useSession();
   const [friendsData, setFriendsData] = useState<{
     connections: any[];
   } | null>(null);
+
+  console.log(session);
+
   useEffect(() => {
+    console.log("loading", loading);
+
     const fetchFriendsData = async () => {
       setLoading(true);
       try {
@@ -27,6 +31,8 @@ function Friends() {
           });
         }
       } catch (error) {
+        console.log(error);
+
         toast.error("Error", {
           description: "Failed to fetch friends data",
           className:

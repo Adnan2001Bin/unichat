@@ -78,6 +78,7 @@ const GroupChat: React.FC = () => {
           });
         }
       } catch (error) {
+        console.log(error);
         toast.error("Error", {
           description: "Failed to fetch group messages",
           className:
@@ -141,6 +142,7 @@ const GroupChat: React.FC = () => {
       socket.emit("sendGroupMessage", { groupId, content: newMessage });
       setNewMessage("");
     } catch (error) {
+      console.log(error);
       toast.error("Error", {
         description: "Failed to send message",
         className:

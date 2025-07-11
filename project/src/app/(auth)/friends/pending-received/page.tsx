@@ -99,6 +99,7 @@ function PendingReceivedRequests() {
         });
       }
     } catch (error) {
+        console.log(error);
       toast.error("Error", {
         description: `Failed to ${action} friend request`,
         className:

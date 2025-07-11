@@ -36,6 +36,8 @@ const GroupDetails: React.FC = () => {
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
 
+  console.log(session);
+  
   const fetchMembers = async () => {
     try {
       const response = await fetch(`/api/groups/${groupId}/members`);

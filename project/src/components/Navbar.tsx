@@ -18,13 +18,6 @@ import notificationIcon from "../../public/images/navbar/bell.png";
 import chatIcon from "../../public/images/navbar/chat.png";
 import signOutIcon from "../../public/images/navbar/exit.png";
 
-interface NavItemProps {
-  href: string;
-  icon: any;
-  alt: string;
-  label: string;
-}
-
 const Navbar: React.FC = () => {
   const { data: session, status } = useSession();
   const [userData, setUserData] = useState<{

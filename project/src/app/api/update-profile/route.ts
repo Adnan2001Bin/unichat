@@ -1,4 +1,3 @@
-
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import connectDB from "@/lib/connectDB";
@@ -7,7 +6,13 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import { z } from "zod";
 import { updateProfileSchema } from "@/schemas/updateProfileSchema";
 
-export async function PATCH(request: NextRequest) {
+// Interface for the response data
+interface UpdateProfileResponse {
+  success: boolean;
+  message: string;
+}
+
+export async function PATCH(request: NextRequest): Promise<NextResponse<UpdateProfileResponse>> {
   await connectDB();
 
   try {
@@ -46,7 +51,7 @@ export async function PATCH(request: NextRequest) {
       { success: true, message: "Profile updated successfully" },
       { status: 200 }
     );
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error updating profile:", error);
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -57,8 +62,9 @@ export async function PATCH(request: NextRequest) {
         { status: 400 }
       );
     }
+    const errorMessage = error instanceof Error ? error.message : "Error updating profile";
     return NextResponse.json(
-      { success: false, message: "Error updating profile" },
+      { success: false, message: errorMessage },
       { status: 500 }
     );
   }

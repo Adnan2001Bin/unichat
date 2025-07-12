@@ -1,4 +1,7 @@
-import React, { useEffect, useState } from "react";
+"use client";
+
+import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import { toast } from "sonner";
 import { Card, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
@@ -40,10 +43,11 @@ function ProfileHome() {
             duration: 4000,
           });
         }
-      } catch (error) {
-        console.error("Error fetching profile data:", error);
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : "Failed to fetch profile data";
+        console.error("Error fetching profile data:", errorMessage);
         toast.error("Error", {
-          description: "Failed to fetch profile data.",
+          description: errorMessage,
           className:
             "bg-red-600 text-white border-red-700 backdrop-blur-md bg-opacity-80",
           duration: 4000,
@@ -84,10 +88,12 @@ function ProfileHome() {
         <div className="relative bg-white shadow-xl rounded-b-lg">
           <div className="h-25 w-full bg-gray-200 rounded-t-lg overflow-hidden relative">
             {profile.coverPhoto ? (
-              <img
+              <Image
                 src={profile.coverPhoto}
                 alt="Cover Photo"
-                className="w-full h-full object-cover transition-transform duration-300 ease-in-out hover:scale-105"
+                layout="fill"
+                objectFit="cover"
+                className="transition-transform duration-300 ease-in-out hover:scale-105 "
               />
             ) : (
               <div className="w-full h-full bg-gradient-to-r from-blue-300 to-purple-300 flex items-center justify-center text-gray-600">
@@ -98,10 +104,12 @@ function ProfileHome() {
           <div className="absolute -bottom-16 left-8">
             <div className="w-25 h-25 rounded-full border-4 border-white shadow-lg overflow-hidden bg-gray-100 flex items-center justify-center transition-transform duration-300 ease-in-out hover:scale-105">
               {profile.profilePicture ? (
-                <img
+                <Image
                   src={profile.profilePicture}
                   alt="Profile Picture"
-                  className="w-full h-full object-cover"
+                  layout="fill"
+                  objectFit="cover"
+                  className="rounded-full"
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-gray-500 text-2xl bg-blue-100">

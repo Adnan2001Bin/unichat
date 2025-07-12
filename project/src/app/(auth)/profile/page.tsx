@@ -14,6 +14,7 @@ import {
   UserCircle,
 } from "lucide-react";
 import Loader from "@/components/Loader";
+import Image from "next/image"; // Import Image from next/image
 
 interface ProfileData {
   userName: string;
@@ -93,10 +94,11 @@ const MyProfile = () => {
         <div className="relative bg-white shadow-xl rounded-b-lg">
           <div className="h-48 w-full bg-gray-200 rounded-t-lg overflow-hidden relative">
             {profile.coverPhoto ? (
-              <img
+              <Image
                 src={profile.coverPhoto}
                 alt="Cover Photo"
-                className="w-full h-full object-cover transition-transform duration-300 ease-in-out hover:scale-105"
+                fill
+                className="object-cover transition-transform duration-300 ease-in-out hover:scale-105"
               />
             ) : (
               <div className="w-full h-full bg-gradient-to-r from-blue-300 to-purple-300 flex items-center justify-center text-gray-600">
@@ -120,12 +122,13 @@ const MyProfile = () => {
             </div>
           </div>
           <div className="absolute -bottom-16 left-8">
-            <div className="w-32 h-32 rounded-full border-4 border-white shadow-lg overflow-hidden bg-gray-100 flex items-center justify-center transition-transform duration-300 ease-in-out hover:scale-105">
+            <div className="w-32 h-32 rounded-full border-4 border-white shadow-lg overflow-hidden bg-gray-100 flex items-center justify-center transition-transform duration-300 ease-in-out hover:scale-105 relative">
               {profile.profilePicture ? (
-                <img
+                <Image
                   src={profile.profilePicture}
                   alt="Profile Picture"
-                  className="w-full h-full object-cover"
+                  fill
+                  className="object-cover"
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-gray-500 text-2xl bg-blue-100">

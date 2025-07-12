@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
-import { CldUploadWidget } from "next-cloudinary";
+import { CldUploadWidget, CloudinaryUploadWidgetInfo, CloudinaryUploadWidgetResults } from "next-cloudinary";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ImageIcon } from "lucide-react";
 import Loader from "@/components/Loader";
+import Image from "next/image";
 
 const CreateGroup: React.FC = () => {
   const { status } = useSession();
@@ -154,8 +155,9 @@ const CreateGroup: React.FC = () => {
                   multiple: false,
                   resourceType: "image",
                 }}
-                onSuccess={(result: any) => {
-                  const secureUrl = result?.info?.secure_url;
+                onSuccess={(result: CloudinaryUploadWidgetResults) => {
+                  const info = result.info as CloudinaryUploadWidgetInfo | undefined;
+                  const secureUrl = info?.secure_url;
                   if (secureUrl) {
                     setFormData((prev) => ({ ...prev, coverImage: secureUrl }));
                     toast.success("Cover image uploaded successfully", {
@@ -165,14 +167,7 @@ const CreateGroup: React.FC = () => {
                     });
                   }
                 }}
-                onError={(error: any) => {
-                  console.error(error);
-                  toast.error("Failed to upload cover image", {
-                    className:
-                      "bg-red-600 text-white border-red-700 backdrop-blur-md bg-opacity-80",
-                    duration: 4000,
-                  });
-                }}
+               
               >
                 {({ open }) => (
                   <Button
@@ -186,9 +181,11 @@ const CreateGroup: React.FC = () => {
                 )}
               </CldUploadWidget>
               {formData.coverImage && (
-                <img
+                <Image
                   src={formData.coverImage}
                   alt="Cover Preview"
+                  width={400}
+                  height={128}
                   className="mt-2 w-full h-32 object-cover rounded-lg shadow-sm"
                 />
               )}

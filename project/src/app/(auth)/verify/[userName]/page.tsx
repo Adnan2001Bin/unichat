@@ -27,7 +27,7 @@ import { z } from "zod";
 import { useRouter, useParams } from "next/navigation";
 import { toast } from "sonner";
 
-// Define schema for verification code only
+// Define schema for verification code
 const verifyCodeSchema = z.object({
   verificationCode: z
     .string()
@@ -36,6 +36,12 @@ const verifyCodeSchema = z.object({
 });
 
 type VerifyCodeInput = z.infer<typeof verifyCodeSchema>;
+
+// Interface for API response
+interface ApiResponse {
+  success: boolean;
+  message?: string;
+}
 
 export default function VerifyCodePage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -69,8 +75,7 @@ export default function VerifyCodePage() {
     setResendLoading(true);
     setResendTimer(60); // Reset timer
     try {
-      // Assuming you have an API endpoint to resend the code
-      const response = await axios.post("/api/resend-code", {
+      const response = await axios.post<ApiResponse>("/api/resend-code", {
         userName: decodeURIComponent(params.userName),
       });
 
@@ -94,10 +99,12 @@ export default function VerifyCodePage() {
         setResendLoading(false); // Keep button enabled if resend fails immediately
         setResendTimer(0); // Reset timer if resend failed
       }
-    } catch (error: any) {
-      console.error(error);
+    } catch (error: unknown) {
       const errorMessage =
-        error.response?.data?.message || "Error resending code.";
+        error instanceof Error && 'response' in error
+          ? (error.response as { data?: { message?: string } })?.data?.message || "Error resending code."
+          : "Error resending code.";
+      console.error(errorMessage);
       toast.error("Resend Error", {
         description: errorMessage,
         className:
@@ -113,8 +120,8 @@ export default function VerifyCodePage() {
   const onSubmit = async (data: VerifyCodeInput) => {
     setIsSubmitting(true);
     try {
-      const response = await axios.post("/api/verify-code", {
-        userName: params.userName, // Use userName from params
+      const response = await axios.post<ApiResponse>("/api/verify-code", {
+        userName: params.userName,
         code: data.verificationCode,
       });
 
@@ -136,11 +143,12 @@ export default function VerifyCodePage() {
           duration: 4000,
         });
       }
-    } catch (error: any) {
-      console.error(error);
+    } catch (error: unknown) {
       const errorMessage =
-        error.response?.data?.message ||
-        "Error verifying code. Please try again.";
+        error instanceof Error && 'response' in error
+          ? (error.response as { data?: { message?: string } })?.data?.message || "Error verifying code. Please try again."
+          : "Error verifying code. Please try again.";
+      console.error(errorMessage);
       toast.error("Error", {
         description: errorMessage,
         className:
@@ -216,7 +224,7 @@ export default function VerifyCodePage() {
             {/* Resend Code Section */}
             <div className="text-center pt-4 border-t border-gray-100 mt-6">
               <p className="text-gray-600 text-sm mb-2">
-                Didn't receive the code?
+                Didn&apos;t receive the code?
               </p>
               <Button
                 variant="outline"

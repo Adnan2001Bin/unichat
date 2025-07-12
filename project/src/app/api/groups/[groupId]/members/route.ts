@@ -1,10 +1,27 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import connectDB from "@/lib/connectDB";
 import GroupModel from "@/models/group.model";
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 
-export async function GET(context: { params: Promise<{ groupId: string }> }) {
+// Interface for a group member
+interface GroupMember {
+  _id: string;
+  userName: string;
+  profilePicture?: string;
+}
+
+// Interface for the response data
+interface GroupMembersResponse {
+  success: boolean;
+  data?: GroupMember[];
+  message?: string;
+}
+
+export async function GET(
+  request: NextRequest,
+  context: { params: Promise<{ groupId: string }> }
+): Promise<NextResponse<GroupMembersResponse>> {
   await connectDB();
 
   try {
@@ -20,7 +37,10 @@ export async function GET(context: { params: Promise<{ groupId: string }> }) {
 
     const group = await GroupModel.findById(groupId)
       .select("members")
-      .populate("members", "userName profilePicture")
+      .populate<{ members: { _id: string; userName: string; profilePicture?: string }[] }>(
+        "members",
+        "userName profilePicture"
+      )
       .lean();
 
     if (!group) {
@@ -32,7 +52,7 @@ export async function GET(context: { params: Promise<{ groupId: string }> }) {
 
     if (
       !group.members.some(
-        (member: any) => member._id.toString() === session.user._id
+        (member) => member._id.toString() === session.user._id
       )
     ) {
       return NextResponse.json(
@@ -43,16 +63,17 @@ export async function GET(context: { params: Promise<{ groupId: string }> }) {
 
     return NextResponse.json({
       success: true,
-      data: group.members.map((member: any) => ({
+      data: group.members.map((member) => ({
         _id: member._id.toString(),
         userName: member.userName,
         profilePicture: member.profilePicture,
       })),
     });
-  } catch (error) {
-    console.error("Error fetching group members:", error);
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : "Error fetching group members";
+    console.error("Error fetching group members:", errorMessage);
     return NextResponse.json(
-      { success: false, message: "Error fetching group members" },
+      { success: false, message: errorMessage },
       { status: 500 }
     );
   }

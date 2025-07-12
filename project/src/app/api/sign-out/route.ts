@@ -6,8 +6,9 @@ export async function POST() {
       { success: true, message: "Signed out successfully" },
       { status: 200 }
     );
-  } catch (error: any) {
-    console.error("Error signing out:", error);
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    console.error("Error signing out:", errorMessage);
     return NextResponse.json(
       { success: false, message: "Error signing out" },
       { status: 500 }

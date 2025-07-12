@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter, useParams } from "next/navigation";
 import { toast } from "sonner";
+import Image from "next/image"; // Import Image from next/image
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ImageIcon, Users, UserCircle } from "lucide-react";
@@ -37,8 +38,8 @@ const GroupDetails: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   console.log(session);
-  
-  const fetchMembers = async () => {
+
+  const fetchMembers = useCallback(async () => {
     try {
       const response = await fetch(`/api/groups/${groupId}/members`);
       const result = await response.json();
@@ -61,9 +62,9 @@ const GroupDetails: React.FC = () => {
         duration: 4000,
       });
     }
-  };
+  }, [groupId]);
 
-  const fetchGroupDetails = async () => {
+  const fetchGroupDetails = useCallback(async () => {
     try {
       const response = await fetch(`/api/groups/${groupId}`);
       const result = await response.json();
@@ -91,7 +92,7 @@ const GroupDetails: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [groupId, fetchMembers]);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -102,7 +103,7 @@ const GroupDetails: React.FC = () => {
     if (status === "authenticated" && groupId) {
       fetchGroupDetails();
     }
-  }, [status, groupId, router]);
+  }, [status, groupId, router, fetchGroupDetails]);
 
   const handleJoinGroup = async () => {
     if (!group) return;
@@ -174,10 +175,11 @@ const GroupDetails: React.FC = () => {
         <Card className="bg-white shadow-xl rounded-xl">
           <div className="relative h-64 w-full bg-gray-200 rounded-t-xl overflow-hidden">
             {group.coverImage ? (
-              <img
+              <Image
                 src={group.coverImage}
                 alt={group.name}
-                className="w-full h-full object-cover transition-transform duration-300 ease-in-out hover:scale-105"
+                fill
+                className="object-cover transition-transform duration-300 ease-in-out hover:scale-105"
               />
             ) : (
               <div className="w-full h-full bg-gradient-to-r from-blue-300 to-purple-300 flex items-center justify-center text-gray-600">
@@ -257,11 +259,14 @@ const GroupDetails: React.FC = () => {
                           className="flex items-center gap-4 p-3 rounded-lg hover:bg-gray-50 transition-all duration-300"
                         >
                           {member.profilePicture ? (
-                            <img
-                              src={member.profilePicture}
-                              alt={`${member.userName}'s profile`}
-                              className="w-12 h-12 rounded-full object-cover border border-gray-300"
-                            />
+                            <div className="relative w-12 h-12">
+                              <Image
+                                src={member.profilePicture}
+                                alt={`${member.userName}'s profile`}
+                                fill
+                                className="rounded-full object-cover border border-gray-300"
+                              />
+                            </div>
                           ) : (
                             <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
                               <UserCircle className="h-8 w-8 text-blue-500" />

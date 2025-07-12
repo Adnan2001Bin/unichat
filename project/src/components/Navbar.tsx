@@ -18,11 +18,14 @@ import notificationIcon from "../../public/images/navbar/bell.png";
 import chatIcon from "../../public/images/navbar/chat.png";
 import signOutIcon from "../../public/images/navbar/exit.png";
 
+// Interface for user data from the API
+interface UserData {
+  profilePicture: string | null;
+}
+
 const Navbar: React.FC = () => {
   const { data: session, status } = useSession();
-  const [userData, setUserData] = useState<{
-    profilePicture: string | null;
-  } | null>(null);
+  const [userData, setUserData] = useState<UserData | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   // Fetch user data when status changes
@@ -38,8 +41,9 @@ const Navbar: React.FC = () => {
           setIsAuthenticated(false);
           setUserData(null);
         }
-      } catch (error) {
-        console.error("Error fetching user data:", error);
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : "Failed to fetch user data";
+        console.error("Error fetching user data:", errorMessage);
         setIsAuthenticated(false);
         setUserData(null);
       }
@@ -76,10 +80,11 @@ const Navbar: React.FC = () => {
       } else {
         throw new Error(result.message || "Failed to sign out");
       }
-    } catch (error) {
-      console.error("Error signing out:", error);
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "Failed to sign out";
+      console.error("Error signing out:", errorMessage);
       toast.error("Error", {
-        description: "Failed to sign out",
+        description: errorMessage,
         className:
           "bg-red-600 text-white border-red-700 backdrop-blur-md bg-opacity-80",
         duration: 4000,
@@ -106,7 +111,9 @@ const Navbar: React.FC = () => {
               <Image
                 src={logo}
                 alt="UniChat Logo"
-                className="w-14 h-9 sm:w-21 sm:h-14"
+                width={56}
+                height={36}
+                className="sm:w-21 sm:h-14"
               />
             </motion.div>
           </Link>
@@ -121,10 +128,12 @@ const Navbar: React.FC = () => {
                     className="relative"
                   >
                     {profilePicture ? (
-                      <img
+                      <Image
                         src={profilePicture}
                         alt="Profile Picture"
-                        className="rounded-full overflow-hidden border border-gray-300 w-10 h-10"
+                        width={40}
+                        height={40}
+                        className="rounded-full overflow-hidden border border-gray-300"
                       />
                     ) : (
                       <div className="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center text-lg font-semibold">
@@ -138,8 +147,10 @@ const Navbar: React.FC = () => {
                   <Image
                     src={signOutIcon}
                     alt="Sign Out"
+                    width={28}
+                    height={28}
                     onClick={handleSignOut}
-                    className="w-7 h-7 object-contain transition-transform duration-300"
+                    className="object-contain transition-transform duration-300"
                   />
                 </div>
               </>
@@ -195,7 +206,9 @@ const Navbar: React.FC = () => {
               <Image
                 src={logo}
                 alt="UniChat Logo"
-                className="w-18 h-10 sm:w-21 sm:h-14"
+                width={72}
+                height={40}
+                className="sm:w-21 sm:h-14"
               />
             </motion.div>
           </Link>
@@ -237,13 +250,15 @@ const Navbar: React.FC = () => {
                   <motion.div
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="relative lg:whileHover lg:whileTap"
+                    className="relative lg:whileHover lg:whileTap "
                   >
                     {profilePicture ? (
-                      <img
+                      <Image
                         src={profilePicture}
                         alt="Profile Picture"
-                        className="rounded-full overflow-hidden border border-gray-300 w-10 h-10"
+                        width={40}
+                        height={40}
+                        className="rounded-full overflow-hidden border border-gray-300 h-11"
                       />
                     ) : (
                       <div className="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center text-lg font-semibold">
@@ -261,12 +276,14 @@ const Navbar: React.FC = () => {
                   </motion.div>
                 </Link>
 
-                <div className="flex items-center px-1 py-2 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all duration-300 group ">
+                <div className="flex items-center px-1 py-2 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all duration-300 group">
                   <Image
                     src={signOutIcon}
                     alt="Sign Out"
+                    width={32}
+                    height={32}
                     onClick={handleSignOut}
-                    className="w-7 h-7 md:w-8 md:h-8 object-contain transition-transform duration-300 group-hover:lg:scale-110"
+                    className="object-contain transition-transform duration-300 group-hover:lg:scale-110"
                   />
                   <motion.span
                     initial={{ opacity: 0, y: 10 }}

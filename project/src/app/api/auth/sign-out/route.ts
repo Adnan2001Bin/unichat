@@ -1,17 +1,14 @@
-import { NextRequest, NextResponse } from "next/server";
-import { signOut } from "next-auth/react";
+import { NextResponse } from "next/server";
 
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
-    // Since this is an API route, we don't call signOut directly here.
-    // Instead, we'll redirect to the NextAuth sign-out process.
-    // NextAuth handles session invalidation internally.
     return NextResponse.json(
       { success: true, message: "Signed out successfully" },
       { status: 200 }
     );
-  } catch (error: any) {
-    console.error("Error signing out:", error);
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    console.error("Error signing out:", errorMessage);
     return NextResponse.json(
       { success: false, message: "Error signing out" },
       { status: 500 }

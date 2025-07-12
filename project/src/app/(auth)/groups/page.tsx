@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
+import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,15 +20,13 @@ import Loader from "@/components/Loader";
 import Link from "next/link";
 
 // Define the new color theme variables based on "Professional & Calming"
-const THEME_PRIMARY_DARK_BLUE = "#2C3E50"; // For strong elements, main text, "Creator" tag, and one blob
-const THEME_SECONDARY_BLUE = "#3498DB"; // For main action buttons like Search, pagination, and one blob
-const THEME_ACCENT_GREEN = "#2ECC71"; // For "Joined" tag, approve buttons, and one blob
-const THEME_BACKGROUND_LIGHT = "#ECF0F1"; // Page background
-const THEME_TEXT_DARK = "#2C3E50"; // Main dark text (matches primary dark blue for consistency)
-const THEME_TEXT_LIGHT = "#7F8C8D"; // Secondary light text for descriptions, etc.
-const THEME_CTA_YELLOW = "#F1C40F"; // For "Create New Group", "Join Group", "Request to Join", and one blob
-
-// No specific hover variables needed when using direct Tailwind classes like hover:bg-blue-600
+const THEME_PRIMARY_DARK_BLUE = "#2C3E50";
+const THEME_SECONDARY_BLUE = "#3498DB";
+const THEME_ACCENT_GREEN = "#2ECC71";
+const THEME_BACKGROUND_LIGHT = "#ECF0F1";
+const THEME_TEXT_DARK = "#2C3E50";
+const THEME_TEXT_LIGHT = "#7F8C8D";
+const THEME_CTA_YELLOW = "#F1C40F";
 
 interface Group {
   _id: string;
@@ -235,7 +234,7 @@ const GroupsPage: React.FC = () => {
         style={{
           backgroundColor: "rgba(255, 255, 255, 0.9)",
           backdropFilter: "blur(10px)",
-        }} // Still slightly transparent white for card bg
+        }}
       >
         <CardContent className="p-0">
           <div className="flex flex-col sm:flex-row justify-between items-center mb-10 gap-6">
@@ -255,7 +254,7 @@ const GroupsPage: React.FC = () => {
             </h1>
             <Button
               onClick={() => router.push("/groups/create")}
-              className="py-3 px-8 rounded-full font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 bg-yellow-500 hover:bg-yellow-600 text-white" // Tailwind colors for bg and hover
+              className="py-3 px-8 rounded-full font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 bg-yellow-500 hover:bg-yellow-600 text-white"
             >
               <PlusCircle className="inline-block mr-2" size={24} /> Create New
               Group
@@ -288,7 +287,7 @@ const GroupsPage: React.FC = () => {
             </div>
             <Button
               type="submit"
-              className="py-3 px-10 rounded-full font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 bg-blue-500 hover:bg-blue-600 text-white" // Tailwind colors for bg and hover
+              className="py-3 px-10 rounded-full font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 bg-blue-500 hover:bg-blue-600 text-white"
             >
               Search
             </Button>
@@ -343,7 +342,7 @@ const GroupsPage: React.FC = () => {
                                       "approve"
                                     )
                                   }
-                                  className="py-2 px-5 rounded-full text-sm font-semibold flex items-center shadow-md hover:shadow-lg transition-all duration-200 bg-emerald-500 hover:bg-emerald-600 text-white" // Tailwind colors for bg and hover
+                                  className="py-2 px-5 rounded-full text-sm font-semibold flex items-center shadow-md hover:shadow-lg transition-all duration-200 bg-emerald-500 hover:bg-emerald-600 text-white"
                                 >
                                   <CheckCircle2 size={18} className="mr-1" />{" "}
                                   Approve
@@ -356,7 +355,7 @@ const GroupsPage: React.FC = () => {
                                       "reject"
                                     )
                                   }
-                                  className="py-2 px-5 rounded-full text-sm font-semibold flex items-center text-white shadow-md hover:shadow-lg transition-all duration-200 bg-red-500 hover:bg-red-600" // Tailwind colors for bg and hover
+                                  className="py-2 px-5 rounded-full text-sm font-semibold flex items-center text-white shadow-md hover:shadow-lg transition-all duration-200 bg-red-500 hover:bg-red-600"
                                 >
                                   <XCircle size={18} className="mr-1" /> Reject
                                 </Button>
@@ -385,8 +384,7 @@ const GroupsPage: React.FC = () => {
               className="text-center py-12 text-xl bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 mb-12 animate-fade-in"
               style={{ color: THEME_TEXT_LIGHT }}
             >
-              You haven't joined any groups yet. Dive into "Discover More
-              Groups" to find your tribe!
+              You haven&apos;t joined any groups yet. Dive into &quot;Discover More Groups&quot; to find your tribe!
             </p>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
@@ -398,10 +396,11 @@ const GroupsPage: React.FC = () => {
                   <Link href={`/groups/${group._id}`} className="block">
                     <div className="h-48 w-full bg-gray-100 relative overflow-hidden">
                       {group.coverImage ? (
-                        <img
+                        <Image
                           src={group.coverImage}
                           alt={group.name}
-                          className="w-full h-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-110"
+                          fill
+                          className="object-cover transition-transform duration-500 ease-in-out group-hover:scale-110"
                         />
                       ) : (
                         <div
@@ -463,8 +462,7 @@ const GroupsPage: React.FC = () => {
               className="text-center py-12 text-xl bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 mb-12 animate-fade-in"
               style={{ color: THEME_TEXT_LIGHT }}
             >
-              You haven't sculpted any communities yet. Take the lead and create
-              one!
+              You haven&apos;t sculpted any communities yet. Take the lead and create one!
             </p>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
@@ -476,10 +474,11 @@ const GroupsPage: React.FC = () => {
                   <Link href={`/groups/${group._id}`} className="block">
                     <div className="h-48 w-full bg-gray-100 relative overflow-hidden">
                       {group.coverImage ? (
-                        <img
+                        <Image
                           src={group.coverImage}
                           alt={group.name}
-                          className="w-full h-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-110"
+                          fill
+                          className="object-cover transition-transform duration-500 ease-in-out group-hover:scale-110"
                         />
                       ) : (
                         <div
@@ -554,10 +553,11 @@ const GroupsPage: React.FC = () => {
                   <Link href={`/groups/${group._id}`} className="block">
                     <div className="h-48 w-full bg-gray-100 relative overflow-hidden">
                       {group.coverImage ? (
-                        <img
+                        <Image
                           src={group.coverImage}
                           alt={group.name}
-                          className="w-full h-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-110"
+                          fill
+                          className="object-cover transition-transform duration-500 ease-in-out group-hover:scale-110"
                         />
                       ) : (
                         <div
@@ -598,7 +598,7 @@ const GroupsPage: React.FC = () => {
                           onClick={() =>
                             handleJoinGroup(group._id, group.privacy)
                           }
-                          className="py-2 px-6 rounded-full font-bold text-sm shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5 bg-yellow-500 hover:bg-yellow-600 text-white" // Tailwind colors for bg and hover
+                          className="py-2 px-6 rounded-full font-bold text-sm shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5 bg-yellow-500 hover:bg-yellow-600 text-white"
                         >
                           {group.privacy === "public" ? (
                             <>
@@ -634,7 +634,7 @@ const GroupsPage: React.FC = () => {
                   setPage(page - 1);
                   fetchGroups(searchQuery, page - 1);
                 }}
-                className="py-3 px-8 rounded-full font-semibold transition-all duration-300 disabled:opacity-50 shadow-md hover:shadow-lg bg-blue-500 hover:bg-blue-600 text-white" // Tailwind colors for bg and hover
+                className="py-3 px-8 rounded-full font-semibold transition-all duration-300 disabled:opacity-50 shadow-md hover:shadow-lg bg-blue-500 hover:bg-blue-600 text-white"
               >
                 Previous Page
               </Button>
@@ -644,7 +644,7 @@ const GroupsPage: React.FC = () => {
                   setPage(page + 1);
                   fetchGroups(searchQuery, page + 1);
                 }}
-                className="py-3 px-8 rounded-full font-semibold transition-all duration-300 disabled:opacity-50 shadow-md hover:shadow-lg bg-blue-500 hover:bg-blue-600 text-white" // Tailwind colors for bg and hover
+                className="py-3 px-8 rounded-full font-semibold transition-all duration-300 disabled:opacity-50 shadow-md hover:shadow-lg bg-blue-500 hover:bg-blue-600 text-white"
               >
                 Next Page
               </Button>

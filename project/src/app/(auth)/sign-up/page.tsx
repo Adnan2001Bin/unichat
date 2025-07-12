@@ -2,11 +2,11 @@
 
 import { SignUpInput, signUpSchema } from "@/schemas/signUpSchema";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import debounce from "lodash.debounce";
-import axios from "axios";
+import axios, { isAxiosError } from "axios";
 import { toast } from "sonner";
 import {
   Card,
@@ -25,7 +25,20 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import Loader from "@/components/Loader";
+import { Loader2, CheckCircle, XCircle } from "lucide-react";
+
+interface ApiErrorResponse {
+  message: string;
+}
+
+interface UsernameCheckResponse {
+  success: boolean;
+}
+
+interface SignUpResponse {
+  success: boolean;
+  message: string;
+}
 
 function SignUpPage() {
   const [usernameStatus, setUsernameStatus] = useState<
@@ -35,7 +48,8 @@ function SignUpPage() {
   const [apiSuccess, setApiSuccess] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-
+ console.log(loading);
+ 
   const form = useForm<SignUpInput>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
@@ -45,27 +59,32 @@ function SignUpPage() {
     },
   });
 
-  const checkUsernameAvailability = React.useCallback(
-    debounce(async (userName: string) => {
-      if (!userName) {
-        setUsernameStatus("idle");
-        return;
-      }
-      setUsernameStatus("checking");
+  const checkUsernameAvailability = useMemo(
+    () =>
+      debounce(
+        async (userName: string, callback: (status: typeof usernameStatus) => void) => {
+          if (!userName) {
+            callback("idle");
+            return;
+          }
+          callback("checking");
 
-      try {
-        const response = await axios.get("/api/check-username-unique", {
-          params: { userName },
-        });
+          try {
+            const response = await axios.get<UsernameCheckResponse>(
+              "/api/check-username-unique",
+              {
+                params: { userName },
+              }
+            );
 
-        setUsernameStatus(response.data.success ? "available" : "taken");
-      } catch (error) {
-        setUsernameStatus("error");
-        console.error("Error checking username:", error);
-      } finally {
-        setLoading(false);
-      }
-    }, 500),
+            callback(response.data.success ? "available" : "taken");
+          } catch (error) {
+            console.error("Error checking username:", error);
+            callback("error");
+          }
+        },
+        500
+      ),
     []
   );
 
@@ -92,7 +111,7 @@ function SignUpPage() {
     }
 
     try {
-      const response = await axios.post("/api/sign-up", data);
+      const response = await axios.post<SignUpResponse>("/api/sign-up", data);
 
       if (response.data.success) {
         setApiSuccess(response.data.message);
@@ -116,10 +135,11 @@ function SignUpPage() {
           duration: 4000,
         });
       }
-    } catch (error: any) {
-      const errorMessage =
-        error.response?.data?.message ||
-        "Error registering user. Please try again.";
+    } catch (error: unknown) {
+      let errorMessage = "Error registering user. Please try again.";
+      if (isAxiosError<ApiErrorResponse>(error)) {
+        errorMessage = error.response?.data?.message || errorMessage;
+      }
       setApiError(errorMessage);
       toast.error("Error", {
         description: errorMessage,
@@ -131,10 +151,6 @@ function SignUpPage() {
       setLoading(false);
     }
   };
-
-  if (loading) {
-    return <Loader message="Processing..." />;
-  }
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 p-4">
@@ -190,27 +206,27 @@ function SignUpPage() {
                             {...field}
                             onChange={(e) => {
                               field.onChange(e);
-                              checkUsernameAvailability(e.target.value);
+                              checkUsernameAvailability(e.target.value, setUsernameStatus);
                             }}
                             className="border border-gray-300 focus:ring-blue-500 focus:border-blue-500 rounded-lg p-2.5 w-full transition duration-200 ease-in-out text-gray-800"
                           />
                         </FormControl>
                         {usernameStatus === "checking" && (
                           <p className="text-sm text-gray-500 mt-1 flex items-center">
-                            <span className="animate-spin mr-2">🔄</span>{" "}
+                            <Loader2 className="animate-spin mr-2 h-4 w-4" />
                             Checking username...
                           </p>
                         )}
                         {usernameStatus === "available" && (
                           <p className="text-sm text-green-600 mt-1 flex items-center">
-                            <span className="mr-1">✅</span> Username is
-                            available!
+                            <CheckCircle className="mr-1 h-4 w-4" />
+                            Username is available!
                           </p>
                         )}
                         {usernameStatus === "taken" && (
                           <p className="text-sm text-red-600 mt-1 flex items-center">
-                            <span className="mr-1">❌</span> Username is already
-                            taken.
+                            <XCircle className="mr-1 h-4 w-4" />
+                            Username is already taken.
                           </p>
                         )}
                         {usernameStatus === "error" && (

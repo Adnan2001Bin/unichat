@@ -4,7 +4,27 @@ import connectDB from "@/lib/connectDB";
 import GroupModel from "@/models/group.model";
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 
-export async function GET() {
+// Interface for a pending user
+interface PendingUser {
+  userId: string;
+  userName: string;
+}
+
+// Interface for a group request
+interface GroupRequest {
+  groupId: string;
+  groupName: string;
+  pendingUsers: PendingUser[];
+}
+
+// Interface for the response data
+interface PendingRequestsResponse {
+  success: boolean;
+  data?: GroupRequest[];
+  message?: string;
+}
+
+export async function GET(): Promise<NextResponse<PendingRequestsResponse>> {
   await connectDB();
 
   try {
@@ -21,13 +41,16 @@ export async function GET() {
       pendingJoinRequests: { $exists: true, $ne: [] },
     })
       .select("name pendingJoinRequests")
-      .populate("pendingJoinRequests", "userName")
+      .populate<{ pendingJoinRequests: { _id: string; userName: string }[] }>(
+        "pendingJoinRequests",
+        "userName"
+      )
       .lean();
 
-    const requests = groups.map((group) => ({
+    const requests: GroupRequest[] = groups.map((group) => ({
       groupId: group._id.toString(),
       groupName: group.name,
-      pendingUsers: group.pendingJoinRequests.map((user: any) => ({
+      pendingUsers: group.pendingJoinRequests.map((user) => ({
         userId: user._id.toString(),
         userName: user.userName,
       })),
@@ -37,10 +60,11 @@ export async function GET() {
       success: true,
       data: requests,
     });
-  } catch (error) {
-    console.error("Error fetching pending requests:", error);
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : "Error fetching pending requests";
+    console.error("Error fetching pending requests:", errorMessage);
     return NextResponse.json(
-      { success: false, message: "Error fetching pending requests" },
+      { success: false, message: errorMessage },
       { status: 500 }
     );
   }

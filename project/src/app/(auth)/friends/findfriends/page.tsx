@@ -7,6 +7,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { z } from "zod";
+import Image from "next/image"; // Import Image from next/image
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Form,
@@ -22,15 +23,13 @@ import { UserCircle, UserPlus, UserCheck, UserX } from "lucide-react";
 import Loader from "@/components/Loader";
 
 // Define the new color theme variables based on "Professional & Calming"
-const THEME_PRIMARY_DARK_BLUE = "#2C3E50"; // For strong elements, main text, header gradient start, and one blob
-const THEME_SECONDARY_BLUE = "#3498DB"; // For main action buttons, header gradient end, and one blob
-const THEME_ACCENT_GREEN = "#2ECC71"; // For "Joined" tag, success states, and one blob
-const THEME_BACKGROUND_LIGHT = "#ECF0F1"; // Page background
-const THEME_TEXT_DARK = "#2C3E50"; // Main dark text
-const THEME_TEXT_LIGHT = "#7F8C8D"; // Secondary light text
-const THEME_CTA_YELLOW = "#F1C40F"; // For "Add Friend" or primary CTAs, and one blob
-
-// No specific hover variables needed when using direct Tailwind classes like hover:bg-blue-600
+const THEME_PRIMARY_DARK_BLUE = "#2C3E50";
+const THEME_SECONDARY_BLUE = "#3498DB";
+const THEME_ACCENT_GREEN = "#2ECC71";
+const THEME_BACKGROUND_LIGHT = "#ECF0F1";
+const THEME_TEXT_DARK = "#2C3E50";
+const THEME_TEXT_LIGHT = "#7F8C8D";
+const THEME_CTA_YELLOW = "#F1C40F";
 
 const searchSchema = z.object({
   query: z.string().min(1, "Search query is required").trim(),
@@ -38,14 +37,35 @@ const searchSchema = z.object({
 
 type SearchInput = z.infer<typeof searchSchema>;
 
+// Interface for a user in search results
+interface SearchUser {
+  _id: string;
+  userName: string;
+  profilePicture?: string;
+  university?: string;
+  headline?: string;
+}
+
+// Interface for a user in friends data
+interface FriendUser {
+  _id: string;
+  userName: string;
+  profilePicture?: string;
+  university?: string;
+  headline?: string;
+}
+
+// Interface for the friends data structure
+interface FriendsData {
+  connections: FriendUser[];
+  pendingSentRequests: FriendUser[];
+  pendingReceivedRequests: FriendUser[];
+}
+
 export default function AddFriendPage() {
   const { data: session, status } = useSession();
-  const [searchResults, setSearchResults] = useState<any[]>([]);
-  const [friendsData, setFriendsData] = useState<{
-    connections: any[];
-    pendingSentRequests: any[];
-    pendingReceivedRequests: any[];
-  } | null>(null);
+  const [searchResults, setSearchResults] = useState<SearchUser[]>([]);
+  const [friendsData, setFriendsData] = useState<FriendsData | null>(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -71,8 +91,7 @@ export default function AddFriendPage() {
           });
         }
       } catch (error) {
-        console.log(error);
-        
+        console.error(error);
         toast.error("Error", {
           description: "Failed to fetch friends data",
           className:
@@ -107,6 +126,7 @@ export default function AddFriendPage() {
         });
       }
     } catch (error) {
+      console.error(error);
       toast.error("Error", {
         description: "Failed to search users",
         className:
@@ -141,7 +161,7 @@ export default function AddFriendPage() {
                 ...prev,
                 pendingSentRequests: [
                   ...prev.pendingSentRequests,
-                  { _id: recipientId },
+                  { _id: recipientId } as FriendUser,
                 ],
               }
             : prev
@@ -155,6 +175,7 @@ export default function AddFriendPage() {
         });
       }
     } catch (error) {
+      console.error(error);
       toast.error("Error", {
         description: "Failed to send friend request",
         className:
@@ -193,8 +214,6 @@ export default function AddFriendPage() {
       ></div>
 
       <div className="max-w-4xl mx-auto relative z-10">
-        {" "}
-        {/* Ensure content is above blobs with z-10 */}
         <Card className="bg-white shadow-xl rounded-2xl overflow-hidden border border-gray-100">
           <CardHeader
             className="p-6"
@@ -246,7 +265,7 @@ export default function AddFriendPage() {
                             <Button
                               type="submit"
                               disabled={loading}
-                              className="font-semibold py-2 px-4 rounded-lg transition-all duration-200 bg-blue-500 hover:bg-blue-600 text-white" // Tailwind colors for bg and hover
+                              className="font-semibold py-2 px-4 rounded-lg transition-all duration-200 bg-blue-500 hover:bg-blue-600 text-white"
                             >
                               {loading ? "Searching..." : "Search"}
                             </Button>
@@ -281,12 +300,15 @@ export default function AddFriendPage() {
                       >
                         <div className="flex items-center space-x-4">
                           {user.profilePicture ? (
-                            <img
-                              src={user.profilePicture}
-                              alt={user.userName}
-                              className="w-14 h-14 rounded-full border-2 object-cover"
-                              style={{ borderColor: THEME_SECONDARY_BLUE }}
-                            />
+                            <div className="relative w-14 h-14">
+                              <Image
+                                src={user.profilePicture}
+                                alt={user.userName}
+                                fill
+                                className="rounded-full border-2 object-cover"
+                                style={{ borderColor: THEME_SECONDARY_BLUE }}
+                              />
+                            </div>
                           ) : (
                             <UserCircle
                               className="w-14 h-14"
@@ -344,7 +366,7 @@ export default function AddFriendPage() {
                           ) : (
                             <Button
                               onClick={() => handleSendRequest(user._id)}
-                              className="font-semibold py-2 px-4 rounded-lg transition-all duration-200 bg-yellow-500 hover:bg-yellow-600 text-white" // Tailwind colors for bg and hover
+                              className="font-semibold py-2 px-4 rounded-lg transition-all duration-200 bg-yellow-500 hover:bg-yellow-600 text-white"
                             >
                               Send Friend Request
                             </Button>

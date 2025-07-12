@@ -34,8 +34,8 @@ export const createTransporter = async (): Promise<Transporter> => {
     await transporter.verify();
     console.log('Transporter verified successfully');
     return transporter;
-  } catch (error: any) {
-    console.error('Transporter verification failed:', error.message);
-    throw new Error(`Failed to configure email transporter: ${error.message}`);
+  } catch (error: unknown) {
+    console.error('Transporter verification failed:', error);
+    throw new Error(`Failed to configure email transporter: ${error}`);
   }
 };

@@ -1,13 +1,18 @@
-
 import { NextRequest, NextResponse } from "next/server";
 import { signUpSchema } from "@/schemas/signUpSchema";
 import { sendVerificationEmail } from "@/emails/VerificationEmail";
 import connectDB from "@/lib/connectDB";
 import UserModel from "@/models/user.model";
 import bcrypt from "bcryptjs";
-import {z} from "zod"
+import { z } from "zod";
 
-export async function POST(request: NextRequest) {
+// Interface for the response data
+interface SignUpResponse {
+  success: boolean;
+  message: string;
+}
+
+export async function POST(request: NextRequest): Promise<NextResponse<SignUpResponse>> {
   await connectDB();
 
   try {
@@ -71,7 +76,7 @@ export async function POST(request: NextRequest) {
     // Send verification email
     const emailResponse = await sendVerificationEmail({
       email: parsedData.email,
-      userName: parsedData.userName, // Use userName to match user.model.ts
+      userName: parsedData.userName,
       verificationCode,
     });
 
@@ -92,7 +97,7 @@ export async function POST(request: NextRequest) {
       },
       { status: 201 }
     );
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error registering user:", error);
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -103,10 +108,11 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+    const errorMessage = error instanceof Error ? error.message : "Error registering user";
     return NextResponse.json(
       {
         success: false,
-        message: "Error registering user",
+        message: errorMessage,
       },
       { status: 500 }
     );

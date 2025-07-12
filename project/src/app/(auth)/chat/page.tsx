@@ -2,7 +2,7 @@
 
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { io, Socket } from "socket.io-client";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -31,8 +31,6 @@ const THEME_TEXT_DARK = "#2C3E50"; // Main dark text (matches primary dark blue 
 const THEME_TEXT_LIGHT = "#7F8C8D"; // Secondary light text for descriptions, etc.
 const THEME_CTA_YELLOW = "#F1C40F"; // For "Add Friend" button, or other calls to action, and one blob
 
-// No specific hover variables needed when using direct Tailwind classes like hover:bg-blue-600
-
 interface Message {
   senderId: string;
   recipientId: string;
@@ -44,6 +42,18 @@ interface User {
   _id: string;
   userName: string;
   profilePicture?: string;
+}
+
+interface ApiResponse<T = unknown> {
+  success: boolean;
+  data?: T;
+  message?: string;
+}
+
+interface SocketError {
+  message: string;
+  action?: string;
+  recipientId?: string;
 }
 
 const Chat: React.FC = () => {
@@ -81,8 +91,8 @@ const Chat: React.FC = () => {
           const response = await fetch(
             "/api/list_friends_and_pending_requests"
           );
-          const result = await response.json();
-          if (result.success) {
+          const result = await response.json() as ApiResponse<{ connections: User[] }>;
+          if (result.success && result.data) {
             setFriends(result.data.connections);
             setFilteredFriends(result.data.connections);
           } else {
@@ -92,9 +102,10 @@ const Chat: React.FC = () => {
               duration: 4000,
             });
           }
-        } catch (error) {
-          console.error(error);
-          toast.error("Error fetching friends", {
+        } catch (error: unknown) {
+          const errorMessage = error instanceof Error ? error.message : "Error fetching friends";
+          console.error(errorMessage);
+          toast.error(errorMessage, {
             className:
               "bg-red-600 text-white border-red-700 backdrop-blur-md bg-opacity-80",
             duration: 4000,
@@ -115,8 +126,8 @@ const Chat: React.FC = () => {
           const response = await fetch(
             `/api/search?query=${encodeURIComponent(searchQuery)}`
           );
-          const result = await response.json();
-          if (result.success) {
+          const result = await response.json() as ApiResponse<User[]>;
+          if (result.success && result.data) {
             // Filter out current user and existing friends
             const nonFriends = result.data.filter(
               (user: User) =>
@@ -139,9 +150,10 @@ const Chat: React.FC = () => {
               duration: 4000,
             });
           }
-        } catch (error) {
-          console.error(error);
-          toast.error("Error searching users", {
+        } catch (error: unknown) {
+          const errorMessage = error instanceof Error ? error.message : "Error searching users";
+          console.error(errorMessage);
+          toast.error(errorMessage, {
             className:
               "bg-red-600 text-white border-red-700 backdrop-blur-md bg-opacity-80",
             duration: 4000,
@@ -154,6 +166,45 @@ const Chat: React.FC = () => {
       setFilteredFriends(friends);
     }
   }, [searchQuery, status, friends, session?.user._id]);
+
+  // Memoize sendFriendRequest to stabilize its reference
+  const sendFriendRequest = useCallback(
+    async (recipientId: string) => {
+      try {
+        const response = await fetch("/api/send-friend-request", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ recipientId }),
+        });
+        const result = await response.json() as ApiResponse;
+        if (result.success) {
+          toast.success("Friend request sent successfully", {
+            className:
+              "bg-green-600 text-white border-green-700 backdrop-blur-md bg-opacity-80",
+            duration: 4000,
+          });
+          setSearchResults(
+            searchResults.filter((user) => user._id !== recipientId)
+          );
+        } else {
+          toast.error(result.message || "Failed to send friend request", {
+            className:
+              "bg-red-600 text-white border-red-700 backdrop-blur-md bg-opacity-80",
+            duration: 4000,
+          });
+        }
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : "Error sending friend request";
+        console.error(errorMessage);
+        toast.error(errorMessage, {
+          className:
+            "bg-red-600 text-white border-red-700 backdrop-blur-md bg-opacity-80",
+          duration: 4000,
+        });
+      }
+    },
+    [searchResults]
+  );
 
   // Initialize Socket.IO connection
   useEffect(() => {
@@ -181,7 +232,7 @@ const Chat: React.FC = () => {
         }
       });
 
-      socketInstance.on("error", ({ message, action, recipientId }) => {
+      socketInstance.on("error", ({ message, action, recipientId }: SocketError) => {
         if (action === "sendFriendRequest") {
           toast.error(message, {
             className:
@@ -189,7 +240,7 @@ const Chat: React.FC = () => {
             duration: 4000,
             action: {
               label: "Send Friend Request",
-              onClick: () => sendFriendRequest(recipientId),
+              onClick: () => sendFriendRequest(recipientId!),
             },
           });
         } else {
@@ -207,7 +258,7 @@ const Chat: React.FC = () => {
         socketInstance.disconnect();
       };
     }
-  }, [status, session, selectedFriend]);
+  }, [status, session, selectedFriend, sendFriendRequest]);
 
   // Fetch chat history when a friend is selected
   useEffect(() => {
@@ -218,8 +269,8 @@ const Chat: React.FC = () => {
           const response = await fetch(
             `/api/messages/history?recipientId=${selectedFriend._id}`
           );
-          const result = await response.json();
-          if (result.success) {
+          const result = await response.json() as ApiResponse<Message[]>;
+          if (result.success && result.data) {
             setMessages(result.data);
           } else {
             toast.error(result.message || "Failed to fetch chat history", {
@@ -228,9 +279,10 @@ const Chat: React.FC = () => {
               duration: 4000,
             });
           }
-        } catch (error) {
-          console.error(error);
-          toast.error("Error fetching chat history", {
+        } catch (error: unknown) {
+          const errorMessage = error instanceof Error ? error.message : "Error fetching chat history";
+          console.error(errorMessage);
+          toast.error(errorMessage, {
             className:
               "bg-red-600 text-white border-red-700 backdrop-blur-md bg-opacity-80",
             duration: 4000,
@@ -265,42 +317,6 @@ const Chat: React.FC = () => {
       content: messageInput,
     });
     setMessageInput("");
-  };
-
-  // Send a friend request
-  const sendFriendRequest = async (recipientId: string) => {
-    try {
-      const response = await fetch("/api/send-friend-request", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ recipientId }),
-      });
-      const result = await response.json();
-      if (result.success) {
-        toast.success("Friend request sent successfully", {
-          className:
-            "bg-green-600 text-white border-green-700 backdrop-blur-md bg-opacity-80",
-          duration: 4000,
-        });
-        // Optionally, update UI to reflect that a request has been sent
-        setSearchResults(
-          searchResults.filter((user) => user._id !== recipientId)
-        );
-      } else {
-        toast.error(result.message || "Failed to send friend request", {
-          className:
-            "bg-red-600 text-white border-red-700 backdrop-blur-md bg-opacity-80",
-          duration: 4000,
-        });
-      }
-    } catch (error) {
-      console.error(error);
-      toast.error("Error sending friend request", {
-        className:
-          "bg-red-600 text-white border-red-700 backdrop-blur-md bg-opacity-80",
-        duration: 4000,
-      });
-    }
   };
 
   if (status === "loading" || loading) {
@@ -354,7 +370,7 @@ const Chat: React.FC = () => {
               <Button
                 variant="ghost"
                 size="icon"
-                className="hover:bg-gray-100 transition-colors text-blue-500 hover:text-blue-600" // Tailwind colors for hover
+                className="hover:bg-gray-100 transition-colors text-blue-500 hover:text-blue-600"
               >
                 <UserPlus className="w-6 h-6" />
               </Button>
@@ -398,7 +414,7 @@ const Chat: React.FC = () => {
                     className={`flex items-center p-4 cursor-pointer border-b border-gray-100 last:border-b-0 hover:bg-gray-50 transition-colors duration-200 ease-in-out ${
                       selectedFriend?._id === friend._id
                         ? `bg-blue-50 border-l-4 border-blue-500`
-                        : "" // Added specific border-blue-500
+                        : ""
                     }`}
                     style={{
                       borderColor:
@@ -409,12 +425,16 @@ const Chat: React.FC = () => {
                     onClick={() => setSelectedFriend(friend)}
                   >
                     {friend.profilePicture ? (
-                      <img
-                        src={friend.profilePicture}
-                        alt={friend.userName}
-                        className="w-12 h-12 rounded-full mr-4 object-cover border-2 shadow-sm"
-                        style={{ borderColor: THEME_SECONDARY_BLUE }}
-                      />
+                      <div className="relative w-12 h-12 mr-4">
+                        <Image
+                          src={friend.profilePicture}
+                          alt={friend.userName}
+                          width={48}
+                          height={48}
+                          className="rounded-full object-cover border-2 shadow-sm"
+                          style={{ borderColor: THEME_SECONDARY_BLUE }}
+                        />
+                      </div>
                     ) : (
                       <div
                         className="w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold mr-4 shadow-md"
@@ -453,12 +473,16 @@ const Chat: React.FC = () => {
                     className="flex items-center p-4 border-b border-gray-100 last:border-b-0 hover:bg-gray-50 transition-colors duration-200 ease-in-out"
                   >
                     {user.profilePicture ? (
-                      <img
-                        src={user.profilePicture}
-                        alt={user.userName}
-                        className="w-12 h-12 rounded-full mr-4 object-cover border-2 shadow-sm"
-                        style={{ borderColor: THEME_ACCENT_GREEN }}
-                      />
+                      <div className="relative w-12 h-12 mr-4">
+                        <Image
+                          src={user.profilePicture}
+                          alt={user.userName}
+                          width={48}
+                          height={48}
+                          className="rounded-full object-cover border-2 shadow-sm"
+                          style={{ borderColor: THEME_ACCENT_GREEN }}
+                        />
+                      </div>
                     ) : (
                       <div
                         className="w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold mr-4 shadow-md"
@@ -480,7 +504,7 @@ const Chat: React.FC = () => {
                       <Button
                         variant="outline"
                         size="sm"
-                        className="rounded-full py-1 px-3 text-sm font-medium transition-all duration-200 shadow-sm hover:shadow-md bg-yellow-500 hover:bg-yellow-600 text-white" // Tailwind colors for bg and hover
+                        className="rounded-full py-1 px-3 text-sm font-medium transition-all duration-200 shadow-sm hover:shadow-md bg-yellow-500 hover:bg-yellow-600 text-white"
                         onClick={() => sendFriendRequest(user._id)}
                       >
                         <UserPlus className="w-4 h-4 mr-2" />
@@ -526,11 +550,15 @@ const Chat: React.FC = () => {
                   <ChevronLeft className="w-6 h-6" />
                 </Button>
                 {selectedFriend.profilePicture ? (
-                  <img
-                    src={selectedFriend.profilePicture}
-                    alt={selectedFriend.userName}
-                    className="w-12 h-12 rounded-full mr-4 object-cover border-2 border-white shadow-sm"
-                  />
+                  <div className="relative w-12 h-12 mr-4">
+                    <Image
+                      src={selectedFriend.profilePicture}
+                      alt={selectedFriend.userName}
+                      width={48}
+                      height={48}
+                      className="rounded-full object-cover border-2 border-white shadow-sm"
+                    />
+                  </div>
                 ) : (
                   <div className="w-12 h-12 rounded-full bg-white bg-opacity-30 text-white flex items-center justify-center text-xl font-bold mr-4 border-2 border-white shadow-sm">
                     {selectedFriend.userName.charAt(0).toUpperCase()}
@@ -540,8 +568,7 @@ const Chat: React.FC = () => {
                   <h2 className="text-xl font-semibold">
                     {selectedFriend.userName}
                   </h2>
-                  <p className="text-sm opacity-80">Online</p>{" "}
-                  {/* This 'Online' status would ideally be dynamic */}
+                  <p className="text-sm opacity-80">Online</p>
                 </div>
                 <Button
                   variant="ghost"
@@ -619,7 +646,7 @@ const Chat: React.FC = () => {
                             className={`text-xs mt-1 text-right ${
                               msg.senderId === session?.user._id
                                 ? "text-gray-500"
-                                : "text-blue-100" // Use standard gray/blue for timestamps
+                                : "text-blue-100"
                             }`}
                           >
                             {new Date(msg.createdAt).toLocaleTimeString([], {
@@ -643,14 +670,14 @@ const Chat: React.FC = () => {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="hover:bg-gray-100 transition-colors text-gray-500 hover:text-gray-600" // Tailwind colors for hover
+                    className="hover:bg-gray-100 transition-colors text-gray-500 hover:text-gray-600"
                   >
                     <Smile className="w-6 h-6" />
                   </Button>
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="hover:bg-gray-100 transition-colors text-gray-500 hover:text-gray-600" // Tailwind colors for hover
+                    className="hover:bg-gray-100 transition-colors text-gray-500 hover:text-gray-600"
                   >
                     <Paperclip className="w-6 h-6" />
                   </Button>
@@ -670,7 +697,7 @@ const Chat: React.FC = () => {
                   />
                   <Button
                     onClick={sendMessage}
-                    className="p-3 rounded-full shadow-lg transition-all duration-300 transform hover:scale-105 bg-blue-500 hover:bg-blue-600 text-white" // Tailwind colors for bg and hover
+                    className="p-3 rounded-full shadow-lg transition-all duration-300 transform hover:scale-105 bg-blue-500 hover:bg-blue-600 text-white"
                     size="icon"
                   >
                     <Send className="w-6 h-6" />
@@ -683,7 +710,9 @@ const Chat: React.FC = () => {
               <Image
                 src={img1}
                 alt="Welcome Chat"
-                className="w-32 h-32 mb-6 animate-bounce-slow"
+                width={128}
+                height={128}
+                className="mb-6 animate-bounce-slow"
               />
               <p
                 className="text-2xl font-bold mb-3"

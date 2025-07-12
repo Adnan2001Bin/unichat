@@ -60,8 +60,8 @@ export async function sendVerificationEmail({
 
     console.log(`Verification email sent to ${email}`);
     return { success: true, message: "Verification email sent successfully." };
-  } catch (error: any) {
-    console.error("Error sending verification email:", error.message);
+  } catch (error: unknown) {
+    console.error("Error sending verification email:", error);
     return { success: false, message: "Failed to send verification email." };
   }
 }

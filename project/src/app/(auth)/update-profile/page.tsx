@@ -3,7 +3,11 @@
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CldUploadWidget } from "next-cloudinary";
+import {
+  CldUploadWidget,
+  CloudinaryUploadWidgetResults,
+  CloudinaryUploadWidgetError,
+} from "next-cloudinary";
 import { toast } from "sonner";
 import { z } from "zod";
 import { updateProfileSchema } from "@/schemas/updateProfileSchema";
@@ -20,13 +24,24 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { X } from "lucide-react";
 
 type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
 
+interface GetProfileResponse {
+  success: boolean;
+  data?: UpdateProfileInput;
+  message?: string;
+}
+
+interface UpdateProfileResponse {
+  success: boolean;
+  message: string;
+}
+
 const ProfileSettings = () => {
-  const [profilePictureUrl, setProfilePictureUrl] = useState<string | null>(
-    null
-  );
+  const [profilePictureUrl, setProfilePictureUrl] = useState<string | null>(null);
   const [coverPhotoUrl, setCoverPhotoUrl] = useState<string | null>(null);
   const [newSkill, setNewSkill] = useState<string>("");
   const router = useRouter();
@@ -53,7 +68,7 @@ const ProfileSettings = () => {
           headers: { "Content-Type": "application/json" },
         });
 
-        const result = await response.json();
+        const result: GetProfileResponse = await response.json();
         if (result.success && result.data) {
           form.reset({
             userName: result.data.userName || "",
@@ -74,10 +89,14 @@ const ProfileSettings = () => {
             duration: 4000,
           });
         }
-      } catch (error) {
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : "Failed to fetch profile data.";
         console.error("Error fetching user data:", error);
         toast.error("Error", {
-          description: "Failed to fetch profile data.",
+          description: errorMessage,
           className:
             "bg-red-600 text-white border-red-700 backdrop-blur-md bg-opacity-80",
           duration: 4000,
@@ -100,7 +119,7 @@ const ProfileSettings = () => {
         }),
       });
 
-      const result = await response.json();
+      const result: UpdateProfileResponse = await response.json();
 
       if (result.success) {
         toast.success("Success", {
@@ -126,10 +145,12 @@ const ProfileSettings = () => {
           duration: 4000,
         });
       }
-    } catch (error) {
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to update profile.";
       console.error("Error updating profile:", error);
       toast.error("Error", {
-        description: "Failed to update profile.",
+        description: errorMessage,
         className:
           "bg-red-600 text-white border-red-700 backdrop-blur-md bg-opacity-80",
         duration: 4000,
@@ -233,8 +254,10 @@ const ProfileSettings = () => {
                             clientAllowedFormats: ["jpg", "png", "jpeg"],
                             maxFileSize: 5 * 1024 * 1024, // 5MB
                           }}
-                          onSuccess={(result: any) => {
-                            const secureUrl = result?.info?.secure_url;
+                          onSuccess={(results: CloudinaryUploadWidgetResults) => {
+                            const secureUrl =
+                              typeof results.info === "object" &&
+                              results.info?.secure_url;
                             if (secureUrl) {
                               setProfilePictureUrl(secureUrl);
                               field.onChange(secureUrl);
@@ -247,11 +270,11 @@ const ProfileSettings = () => {
                               });
                             }
                           }}
-                          onError={(error) => {
+                          onError={(error: CloudinaryUploadWidgetError) => {
                             console.error(error);
                             toast.error("Upload Error", {
                               description:
-                                "Failed to upload profile periods picture. Please try again.",
+                                "Failed to upload profile picture. Please try again.",
                               className:
                                 "bg-red-600 text-white border-red-700 backdrop-blur-md bg-opacity-80",
                               duration: 4000,
@@ -269,11 +292,12 @@ const ProfileSettings = () => {
                           )}
                         </CldUploadWidget>
                         {profilePictureUrl && (
-                          <div className="mt-4">
-                            <img
+                          <div className="mt-4 relative w-32 h-32">
+                            <Image
                               src={profilePictureUrl}
                               alt="Profile Preview"
-                              className="w-32 h-32 object-cover rounded-full border border-gray-300"
+                              fill
+                              className="object-cover rounded-full border border-gray-300"
                             />
                           </div>
                         )}
@@ -305,8 +329,10 @@ const ProfileSettings = () => {
                             clientAllowedFormats: ["jpg", "png", "jpeg"],
                             maxFileSize: 10 * 1024 * 1024, // 10MB for cover photo
                           }}
-                          onSuccess={(result: any) => {
-                            const secureUrl = result?.info?.secure_url;
+                          onSuccess={(results: CloudinaryUploadWidgetResults) => {
+                            const secureUrl =
+                              typeof results.info === "object" &&
+                              results.info?.secure_url;
                             if (secureUrl) {
                               setCoverPhotoUrl(secureUrl);
                               field.onChange(secureUrl);
@@ -319,7 +345,7 @@ const ProfileSettings = () => {
                               });
                             }
                           }}
-                          onError={(error) => {
+                          onError={(error: CloudinaryUploadWidgetError) => {
                             console.error(error);
                             toast.error("Upload Error", {
                               description:
@@ -341,11 +367,12 @@ const ProfileSettings = () => {
                           )}
                         </CldUploadWidget>
                         {coverPhotoUrl && (
-                          <div className="mt-4">
-                            <img
+                          <div className="mt-4 relative w-full h-32">
+                            <Image
                               src={coverPhotoUrl}
                               alt="Cover Photo Preview"
-                              className="w-full h-32 object-cover rounded-lg border border-gray-300"
+                              fill
+                              className="object-cover rounded-lg border border-gray-300"
                             />
                           </div>
                         )}
@@ -417,7 +444,7 @@ const ProfileSettings = () => {
                       Skills
                     </FormLabel>
                     <p className="text-sm text-gray-500 mb-2">
-                      Enter skills one at a time and click "Add" to include them
+                      Enter skills one at a time and click {'Add'} to include them
                       in your profile (max 20 skills, 50 characters each).
                     </p>
                     <FormControl>
@@ -450,7 +477,7 @@ const ProfileSettings = () => {
                                   onClick={() => handleRemoveSkill(skill)}
                                   className="ml-2 text-blue-600 hover:text-blue-800"
                                 >
-                                  ✕
+                                  <X className="h-4 w-4" />
                                 </button>
                               </div>
                             ))}

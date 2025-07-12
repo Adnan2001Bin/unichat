@@ -1,11 +1,13 @@
+
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { StaticImageData } from "next/image";
 
 interface NavItemProps {
   href: string;
-  icon: any;
+  icon: StaticImageData;
   alt: string;
   label: string;
   onClick?: () => void;

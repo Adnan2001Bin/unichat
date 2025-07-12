@@ -1,6 +1,6 @@
 import mongoose, { Schema, Document } from "mongoose";
 
-interface IGroup extends Document {
+export interface IGroup extends Document {
   name: string;
   description: string;
   privacy: "public" | "private";

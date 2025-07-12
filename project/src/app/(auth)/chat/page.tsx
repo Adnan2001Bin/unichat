@@ -210,7 +210,7 @@ const Chat: React.FC = () => {
   useEffect(() => {
     if (status === "authenticated" && session?.user?._id) {
       const socketInstance = io(
-        process.env.NEXT_PUBLIC_APP_URL || "http://localhost:4000",
+        process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:4000",
         {
           auth: { userId: session.user._id },
         }

@@ -1,4 +1,3 @@
-// Importing required dependencies
 import { Server } from "socket.io";
 import http from "http";
 import dotenv from "dotenv";
@@ -17,14 +16,25 @@ const PORT = process.env.SOCKET_PORT || 4000;
 // Create an HTTP server to attach Socket.IO
 const server = http.createServer();
 
-// Initialize Socket.IO server with CORS configuration
-const allowedOrigins = process.env.NEXT_PUBLIC_APP_URL
-  ? process.env.NEXT_PUBLIC_APP_URL.split(",")
-  : ["http://localhost:3000", "https://unichat-cc.vercel.app"];
+// Define allowed origins for CORS
+const allowedOrigins = [
+  "https://unichat-cc.vercel.app/",
+  "http://localhost:3000",
+];
 
+// Initialize Socket.IO server with CORS configuration
 const io = new Server(server, {
   cors: {
-    origin: allowedOrigins,
+    origin: (origin, callback) => {
+      // Allow requests with no origin (e.g., non-browser clients like curl)
+      if (!origin) return callback(null, true);
+      // Check if the origin is in the allowed list
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      // Reject unallowed origins
+      callback(new Error("Not allowed by CORS"));
+    },
     methods: ["GET", "POST"],
     credentials: true,
   },
@@ -50,11 +60,13 @@ io.use(async (socket, next) => {
 
     socket.userId = user._id.toString();
     next();
-  } catch (error: any) {
-    console.error("Authentication error:", error.message, {
+  } catch (error: unknown) {
+    const errorMessage =
+      error instanceof Error ? error.message : "Authentication error";
+    console.error("Authentication error:", errorMessage, {
       userId: socket.handshake.auth.userId,
     });
-    next(new Error(`Authentication error: ${error.message}`));
+    next(new Error(`Authentication error: ${errorMessage}`));
   }
 });
 
@@ -62,6 +74,7 @@ io.use(async (socket, next) => {
 io.on("connection", async (socket) => {
   console.log(`User connected: ${socket.userId}`);
 
+  // Event Handler: Handle user joining a one-on-one chat room
   socket.on("joinChat", ({ recipientId }) => {
     const roomId = [socket.userId, recipientId].sort().join("-");
     socket.join(roomId);
@@ -69,12 +82,14 @@ io.on("connection", async (socket) => {
     console.log(`User ${socket.userId} joined room ${roomId}`);
   });
 
+  // Event Handler: Handle user joining a group chat room
   socket.on("joinGroup", ({ groupId }) => {
     socket.join(groupId);
     socket.emit("joinedGroup", { groupId });
     console.log(`User ${socket.userId} joined group ${groupId}`);
   });
 
+  // Event Handler: Handle sending a one-on-one chat message
   socket.on("sendMessage", async ({ recipientId, content }) => {
     try {
       const sender = await UserModel.findById(socket.userId);
@@ -109,13 +124,16 @@ io.on("connection", async (socket) => {
         content,
         createdAt: message.createdAt,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to send message";
       socket.emit("error", {
-        message: error.message || "Failed to send message",
+        message: errorMessage,
       });
     }
   });
 
+  // Event Handler: Handle sending a group chat message
   socket.on("sendGroupMessage", async ({ groupId, content }) => {
     try {
       const sender = await UserModel.findById(socket.userId);
@@ -148,19 +166,22 @@ io.on("connection", async (socket) => {
         content,
         createdAt: message.createdAt.toISOString(),
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to send group message";
       socket.emit("error", {
-        message: error.message || "Failed to send group message",
+        message: errorMessage,
       });
     }
   });
 
+  // Event: Handle socket disconnection
   socket.on("disconnect", () => {
     console.log(`User disconnected: ${socket.userId}`);
   });
 });
 
-// Connect to MongoDB and start the server
+// Connect to MongoDB and start the Socket.IO server
 connectDB().then(() => {
   server.listen(PORT, () => {
     console.log(`Socket.IO server running on port ${PORT}`);

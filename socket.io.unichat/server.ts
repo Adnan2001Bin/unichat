@@ -18,7 +18,7 @@ const server = http.createServer();
 
 // Define allowed origins for CORS
 const allowedOrigins = [
-  "https://unichat-cc.vercel.app",
+  "https://unichat-cc.vercel.app/",
   "http://localhost:3000",
 ];
 

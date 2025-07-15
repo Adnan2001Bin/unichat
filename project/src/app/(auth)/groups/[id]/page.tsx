@@ -4,12 +4,13 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter, useParams } from "next/navigation";
 import { toast } from "sonner";
-import Image from "next/image"; // Import Image from next/image
+import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ImageIcon, Users, UserCircle } from "lucide-react";
 import Loader from "@/components/Loader";
 import Link from "next/link";
+import GroupPosts from "@/components/GroupPosts";
 
 interface Group {
   _id: string;
@@ -38,7 +39,7 @@ const GroupDetails: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   console.log(session);
-
+  
   const fetchMembers = useCallback(async () => {
     try {
       const response = await fetch(`/api/groups/${groupId}/members`);
@@ -214,11 +215,18 @@ const GroupDetails: React.FC = () => {
                   </Button>
                 )}
                 {group.isMember && (
-                  <Link href={`/groups/${groupId}/chat`}>
-                    <Button className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-full transition-all duration-300 transform hover:scale-105">
-                      Group Chat
-                    </Button>
-                  </Link>
+                  <>
+                    <Link href={`/groups/${groupId}/chat`}>
+                      <Button className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-full transition-all duration-300 transform hover:scale-105">
+                        Group Chat
+                      </Button>
+                    </Link>
+                    <Link href={`/groups/${groupId}/post`}>
+                      <Button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-full transition-all duration-300 transform hover:scale-105">
+                        View Posts
+                      </Button>
+                    </Link>
+                  </>
                 )}
               </div>
             </div>
@@ -279,6 +287,16 @@ const GroupDetails: React.FC = () => {
                       ))}
                     </div>
                   )}
+                </CardContent>
+              </Card>
+            )}
+            {group.isMember && (
+              <Card className="mt-6 bg-white shadow-md rounded-lg p-6">
+                <CardContent className="p-0">
+                  <h2 className="text-lg font-semibold text-gray-800 mb-4">
+                    Group Posts
+                  </h2>
+                  <GroupPosts groupId={groupId} />
                 </CardContent>
               </Card>
             )}
